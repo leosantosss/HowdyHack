@@ -136,6 +136,7 @@ body {
 
 .categories {
     background: #760505;
+    height: 120px;
 }
 
 .categories,
@@ -144,7 +145,8 @@ body {
     display: flex;
     justify-content: center;
     border-radius: 5px;
-    font-size: 3rem;
+    font-size:2rem;
+    align-items: center;
 }
 
 
@@ -174,6 +176,7 @@ body {
     background: #760505;
     color: white;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    font-size: 3rem;
 }
 
 .cell-front,
@@ -185,7 +188,6 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 3rem;
     font-weight: bold;
     backface-visibility: hidden;
     /* hides the back when not facing front */
@@ -193,13 +195,11 @@ body {
 
 .cell-back {
     background: #b42222;
-    /* gold for answer side */
     color: #ffffff;
     transform: rotateY(180deg);
-    /* flipped behind front initially */
-    font-size: 1.5rem;
-
-
+    font-size: 1.2rem;
+    padding: 15px;
+    box-sizing: border-box; /* Makes padding fit inside the element */
 }
 
 .cell.flipped .cell-inner {
@@ -231,8 +231,8 @@ body {
     /* Safari support */
 
     /* Optional shadow for depth */
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-
+    box-shadow: 0 4px 20px #ffd700;
+    
 
     text-align: center;
 }

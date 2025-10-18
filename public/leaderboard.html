@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Leaderboard | Texas A&M Jeopardy</title>
+  <link rel="stylesheet" href="styles.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+  <style>
+
+    body {
+      background-color: #2d0a0a;
+      color: #fdf7e3;
+      font-family: 'Bebas Neue', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #500000;
+      padding: 15px 40px;
+    }
+
+    .topbar h2 a {
+      color: #fdf7e3;
+      text-decoration: none;
+      font-size: 1.8rem;
+    }
+
+    .topbar ul {
+      list-style: none;
+      display: flex;
+      gap: 25px;
+      margin: 0;
+      padding: 0;
+    }
+
+    .topbar a {
+      color: #fdf7e3;
+      text-decoration: none;
+      font-size: 1.1rem;
+      transition: color 0.2s ease;
+    }
+
+    .topbar a:hover {
+      color: #caa052;
+    }
+
+    .main {
+ 
+      margin-top: 50px;
+    }
+
+    .leaderboard-card {
+      width: min(90vw, 800px);
+      margin: 2rem auto;
+      background-color: #3a0a0a;
+      border-radius: 12px;
+      padding: 1rem;
+      box-shadow: 0 4px 20px rgba(162, 21, 21, 0.4);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: Arial, sans-serif;
+    }
+
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    th {
+      text-align: left;
+      font-weight: bold;
+      border-bottom: 2px solid #caa052;
+    }
+
+    .rank { width: 50px; }
+    .score { text-align: right; }
+
+    .muted {
+      color: #d8c9a5;
+      text-align: center;
+      font-size: 1rem;
+      margin-top: 10px;
+    }
+
+    button {
+      background-color: #caa052;
+      border: none;
+      color: #500000;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background-color: #e0b762;
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <h2><span><a href="index.html">Texas A&M Jeopardy</a></span></h2>
+    <nav>
+      <ul>
+        <li><a href="howtoplay.html">How to Play?</a></li>
+        <li><a href="leaderboard.html" class="active">Leaderboard</a></li>
+        <li><a href="about.html">About</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="main">
+    <h1>Top 10 Leaderboard</h1>
+
+    <div class="leaderboard-card">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Player</th>
+            <th>Score</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody id="leaderboard-body"></tbody>
+      </table>
+      <p id="no-scores" class="muted" style="display:none;">No scores yet — be the first to play!</p>
+      <button id="add-demo">Add Demo Score</button>
+    </div>
+  </main>
+
+  <script src="leaderboard.js"></script>
+</body>
+</html>

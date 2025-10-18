@@ -1,5 +1,5 @@
 // leaderboard.js
-const STORAGE_KEY = 'leaderboard'; // array of { name, score, ts }
+const STORAGE_KEY = 'leaderboard';
 
 // ---- Load & Save ----
 function loadScores() {

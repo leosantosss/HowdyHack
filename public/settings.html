@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Settings | Texas A&M Jeopardy</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css"/>
+  <style>
+
+    
+    body {
+      background-color: #2d0a0a;
+      color: #fdf7e3;
+      font-family: 'Bebas Neue', sans-serif;
+      text-align: center;
+    }
+
+    .settings-card {
+      background-color: #721010;
+      border-radius: 12px;
+      padding: 2rem;
+      width: min(90vw, 600px);
+      margin: 3rem auto;
+      box-shadow: 0 0 20px rgba(0,0,0,0.4);
+      
+    }
+
+    .setting-item {
+      margin: 15px 0;
+      text-align: left;
+      font-size: 2rem;
+  
+      
+    }
+
+    input[type="range"] {
+      width: 100%; 
+    }
+
+    button {
+      background-color: #caa052;
+      color: #500000;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 20px;
+      font-size: 1.1rem;
+    }
+
+    button:hover {
+      background-color: #e0b762;
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <h2><span><a href="index.html">Texas A&M Jeopardy</a></span></h2>
+    <nav>
+      <ul>
+        <li><a href="howtoplay.html">How to Play?</a></li>
+        <li><a href="leaderboard.html">Leaderboard</a></li>
+        <li><a href="Settings.html">Settings</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Game Settings</h1>
+    <div class="settings-card">
+      <div class="setting-item">
+        <label>
+          <input type="checkbox" id="soundToggle" checked>
+          Sound Effects
+        </label>
+      </div>
+
+      <div class="setting-item">
+        <label for="timerLength">Timer Length: <span id="timerValue">15</span>s</label>
+        <input type="range" id="timerLength" min="5" max="30" value="15">
+      </div>
+
+      <div class="setting-item">
+        <label for="playerName">Player Name:</label><br>
+        <input type="text" id="playerName" placeholder="Enter your name" style="width:100%;padding:6px;">
+      </div>
+
+      <div class="setting-item">
+        <button id="resetLeaderboard">Reset Leaderboard</button>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const timerSlider = document.getElementById('timerLength');
+    const timerValue = document.getElementById('timerValue');
+    timerSlider.oninput = () => timerValue.textContent = timerSlider.value;
+
+    document.getElementById('resetLeaderboard').addEventListener('click', () => {
+      localStorage.removeItem('leaderboard');
+      alert('Leaderboard has been reset!');
+    });
+  </script>
+</body>
+</html>

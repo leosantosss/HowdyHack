@@ -1,61 +1,239 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>A&M Jeopardy</title>
-    <link rel="stylesheet" href = "styles.css">
+    <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
-    <header class = "topbar">
-        <h2><span><a href = "index.html">Texas A&M Jeopardy</a></span></h2>
+    <header class="topbar">
+        <h2><span><a href="index.html">Texas A&M Jeopardy</a></span></h2>
         <nav>
             <ul>
-                <li><a href = "/How to Play">How to Play?</a></li>
-                <li><a href = "/Leaderboard">Leaderboard</a></li>
-                <li><a href = "/About">About</a></li>
+                <li><a href="/How to Play">How to Play?</a></li>
+                <li><a href="/Leaderboard">Leaderboard</a></li>
+                <li><a href="/About">About</a></li>
             </ul>
         </nav>
     </header>
-    <div class = "big">
-        <div class = "score">
-            <h1>Score :</h1>
+    <div class="middle">
+        <div class="score">
+            <h1>Score:</h1>
         </div>
-    <div class = "board">
-        
-
-        <div class = "categories">.</div>
-        <div class = "categories">.</div>
-        <div class = "categories">.</div>
-        <div class = "categories">.</div>
-        <div class = "categories">.</div>
-        <div class = "categories">.</div>
+        <div class="board">
 
 
-        <div class = "cell">$200</div>
-        <div class = "cell">$200</div>
-        <div class = "cell">$200</div>
-        <div class = "cell">$200</div>
-        <div class = "cell">$200</div>
-        <div class = "cell">$200</div>
+            <div class="categories">.</div>
+            <div class="categories">.</div>
+            <div class="categories">.</div>
+            <div class="categories">.</div>
+            <div class="categories">.</div>
+            <div class="categories">.</div>
 
-        <div class = "cell">$400</div>
-        <div class = "cell">$400</div>
-        <div class = "cell">$400</div>
-        <div class = "cell">$400</div>
-        <div class = "cell">$400</div>
-        <div class = "cell">$400</div>
 
-        <div class = "cell">$600</div>
-        <div class = "cell">$600</div>
-        <div class = "cell">$600</div>
-        <div class = "cell">$600</div>
-        <div class = "cell">$600</div>
-        <div class = "cell">$600</div>
+
+            <!-- Example row with 6 tiles -->
+            <div class="cell" data-answer="Hello">
+                <div class="cell-inner">
+                    <div class="cell-front">$200</div>
+                    <div class="cell-back">What is the thumbs-up hand sign used by Aggies?</div>
+                </div>
+            </div>
+            <div class="cell" data-answer="">
+                <div class="cell-inner">
+                    <div class="cell-front">$200</div>
+                    <div class="cell-back">Answer 2</div>
+                </div>
+            </div>
+            <div class="cell" data-answer="">
+                <div class="cell-inner">
+                    <div class="cell-front">$200</div>
+                    <div class="cell-back">Answer 3</div>
+                </div>
+            </div>
+            <div class="cell" data-answer="">
+                <div class="cell-inner">
+                    <div class="cell-front">$200</div>
+                    <div class="cell-back">Answer 4</div>
+                </div>
+            </div>
+            <div class="cell" data-answer="">
+                <div class="cell-inner">
+                    <div class="cell-front">$200</div>
+                    <div class="cell-back">Answer 5</div>
+                </div>
+            </div>
+            <div class="cell" data-answer="">
+                <div class="cell-inner">
+                    <div class="cell-front">$200</div>
+                    <div class="cell-back">Answer 6</div>
+                </div>
+            </div>
+            <!-- 400 -->
+            <div class="cell" data-answer="">
+                <div class="cell-inner">
+                    <div class="cell-front">$400</div>
+                    <div class="cell-back">Answer 1</div>
+                </div>
+            </div>
+            <div class="cell" data-answer="">
+                <div class="cell-inner">
+                    <div class="cell-front">$400</div>
+                    <div class="cell-back">Answer 2</div>
+                </div>
+            </div>
+            <div class="cell" data-answer="">
+                <div class="cell-inner">
+                    <div class="cell-front">$400</div>
+                    <div class="cell-back">Answer 3</div>
+                </div>
+            </div>
+            <div class="cell" data-answer="">
+                <div class="cell-inner">
+                    <div class="cell-front">$400</div>
+                    <div class="cell-back">Answer 4</div>
+                </div>
+            </div>
+            <div class="cell" data-answer="">
+                <div class="cell-inner">
+                    <div class="cell-front">$400</div>
+                    <div class="cell-back">Answer 5</div>
+                </div>
+            </div>
+            <div class="cell" data-answer="">
+                <div class="cell-inner">
+                    <div class="cell-front">$400</div>
+                    <div class="cell-back">Answer 6</div>
+                </div>
+            </div>
+
+            <!-- 600 -->
+            <div class="cell" data-answer="">
+                <div class="cell-inner">
+                    <div class="cell-front">$600</div>
+                    <div class="cell-back">Answer 1</div>
+                </div>
+            </div>
+            <div class="cell" data-answer="">
+                <div class="cell-inner">
+                    <div class="cell-front">$600</div>
+                    <div class="cell-back">Answer 2</div>
+                </div>
+            </div>
+            <div class="cell" data-answer="">
+                <div class="cell-inner">
+                    <div class="cell-front">$600</div>
+                    <div class="cell-back">Answer 3</div>
+                </div>
+            </div>
+            <div class="cell" data-answer="">
+                <div class="cell-inner">
+                    <div class="cell-front">$600</div>
+                    <div class="cell-back">Answer 4</div>
+                </div>
+            </div>
+            <div class="cell" data-answer="">
+                <div class="cell-inner">
+                    <div class="cell-front">$600</div>
+                    <div class="cell-back">Answer 5</div>
+                </div>
+            </div>
+            <div class="cell" data-answer="">
+                <div class="cell-inner">
+                    <div class="cell-front">$600</div>
+                    <div class="cell-back">Answer 6</div>
+                </div>
+            </div>
+
+
+            <!-- 800 -->
+            <div class="cell" data-answer="">
+                <div class="cell-inner">
+                    <div class="cell-front">$800</div>
+                    <div class="cell-back">Answer 1</div>
+                </div>
+            </div>
+            <div class="cell" data-answer="">
+                <div class="cell-inner">
+                    <div class="cell-front">$800</div>
+                    <div class="cell-back">Answer 2</div>
+                </div>
+            </div>
+            <div class="cell" data-answer="">
+                <div class="cell-inner">
+                    <div class="cell-front">$800</div>
+                    <div class="cell-back">Answer 3</div>
+                </div>
+            </div>
+            <div class="cell" data-answer="">
+                <div class="cell-inner">
+                    <div class="cell-front">$800</div>
+                    <div class="cell-back">Answer 4</div>
+                </div>
+            </div>
+            <div class="cell" data-answer="">
+                <div class="cell-inner">
+                    <div class="cell-front">$800</div>
+                    <div class="cell-back">Answer 5</div>
+                </div>
+            </div>
+            <div class="cell" data-answer="">
+                <div class="cell-inner">
+                    <div class="cell-front">$800</div>
+                    <div class="cell-back">Answer 6</div>
+                </div>
+            </div>
+
+            <!-- 1000 -->
+            <div class="cell" data-answer="">
+                <div class="cell-inner">
+                    <div class="cell-front">$1000</div>
+                    <div class="cell-back">Answer 1</div>
+                </div>
+            </div>
+            <div class="cell" data-answer="">
+                <div class="cell-inner">
+                    <div class="cell-front">$1000</div>
+                    <div class="cell-back">Answer 2</div>
+                </div>
+            </div>
+            <div class="cell" data-answer="">
+                <div class="cell-inner">
+                    <div class="cell-front">$1000</div>
+                    <div class="cell-back">Answer 3</div>
+                </div>
+            </div>
+            <div class="cell" data-answer="">
+                <div class="cell-inner">
+                    <div class="cell-front">$1000</div>
+                    <div class="cell-back">Answer 4</div>
+                </div>
+            </div>
+            <div class="cell" data-answer="">
+                <div class="cell-inner">
+                    <div class="cell-front">$1000</div>
+                    <div class="cell-back">Answer 5</div>
+                </div>
+            </div>
+            <div class="cell" data-answer="">
+                <div class="cell-inner">
+                    <div class="cell-front">$1000</div>
+                    <div class="cell-back">Answer 6</div>
+                </div>
+            </div>
+        </div>
+        <div class="answer-container">
+            <input type="text" id="answer-input" placeholder="Type your answer...">
+            <button id="submit-answer">Submit</button>
+        </div>
     </div>
-    
-    
+
+
+    <script src="script.js"></script>
 </body>
+
 </html>

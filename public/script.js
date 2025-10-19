@@ -1,4 +1,18 @@
-// Category data
+// Firebase Configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyDJHdY1EuULi38otKAWEEP8idtgUUdNrXs",
+  authDomain: "texasamjeopardy.firebaseapp.com",
+  projectId: "texasamjeopardy",
+  storageBucket: "texasamjeopardy.firebasestorage.app",
+  messagingSenderId: "188279865719",
+  appId: "1:188279865719:web:c7773fd9559c65922e6172",
+  measurementId: "G-VMJ3PLNDMF"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
 const CATEGORIES = [
   {
     name: "Aggie Traditions",
@@ -91,145 +105,131 @@ let currentCell = null;
 let currentAnswers = [];
 let currentPoints = 0;
 
-// Wait for DOM to be ready
-window.addEventListener('DOMContentLoaded', () => {
-  
-  // Function to update score display
-  function updateScore(points) {
-    score += points;
-    document.getElementById('score-display').textContent = score;
+let timerInterval = null;
+let timeRemaining = 15;
+let totalTime = 15;
+
+const modalOverlay = document.getElementById('modal-overlay');
+const modal = document.getElementById('modal');
+const modalIcon = document.getElementById('modal-icon');
+const modalTitle = document.getElementById('modal-title');
+const modalPoints = document.getElementById('modal-points');
+const modalMessage = document.getElementById('modal-message');
+const correctAnswersSection = document.getElementById('correct-answers-section');
+const modalClose = document.getElementById('modal-close');
+
+const answerInput = document.getElementById('answer-input');
+const submitButton = document.getElementById('submit-answer');
+const scoreDisplay = document.getElementById('score-display');
+
+document.querySelectorAll('.cell').forEach(cell => {
+  cell.addEventListener('click', function () {
+    if (!this.classList.contains('flipped') && !this.classList.contains('answered')) {
+      if (currentCell && currentCell !== this) {
+        currentCell.classList.remove('flipped');
+      }
+
+      this.classList.add('flipped');
+      currentCell = this;
+
+      const pointText = this.querySelector('.cell-front').textContent;
+      currentPoints = parseInt(pointText.replace('$', ''));
+
+      currentAnswers = this.getAttribute('data-answer')
+        .split(',')
+        .map(a => a.trim().toLowerCase());
+
+      startTimer();
+    }
+  });
+});
+
+function updateScore(points) {
+  score += points;
+  scoreDisplay.textContent = score;
+}
+
+function startTimer() {
+  const savedTime = localStorage.getItem('timerLength');
+  totalTime = savedTime ? parseInt(savedTime) : 15;
+  timeRemaining = totalTime;
+
+  document.getElementById('time-left').textContent = timeRemaining;
+  document.getElementById('timer-bar').style.transform = 'scaleX(1)';
+  document.getElementById('timer').classList.remove('low');
+
+  if (timerInterval) {
+    clearInterval(timerInterval);
   }
 
-  // Function to handle time up
-  function handleTimeUp() {
-    if (currentCell && currentAnswers.length > 0) {
-      updateScore(-currentPoints);
-      showModal(false, currentPoints, currentAnswers);
-      
-      currentCell.classList.add('answered');
-      document.getElementById('answer-input').value = "";
-      currentCell = null;
-      currentAnswers = [];
-      currentPoints = 0;
+  timerInterval = setInterval(() => {
+    timeRemaining--;
+    document.getElementById('time-left').textContent = timeRemaining;
+
+    const progress = timeRemaining / totalTime;
+    document.getElementById('timer-bar').style.transform = `scaleX(${progress})`;
+
+    if (timeRemaining <= 5) {
+      document.getElementById('timer').classList.add('low');
     }
+
+    if (timeRemaining <= 0) {
+      clearInterval(timerInterval);
+      timeUp();
+    }
+
+function stopTimer() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
   }
+}
 
-  // Override timer.js functions with local versions that work with our game state
-  window.beginQuestionTimer = function(penalty) {
-    const timerLength = parseInt(localStorage.getItem('timerLength')) || 15;
-    let timeRemaining = timerLength;
-    
-    const timerBar = document.getElementById('timer-bar');
-    const timeLeftText = document.getElementById('time-left');
-    const timer = document.getElementById('timer');
-    
-    if (!timerBar || !timeLeftText || !timer) return;
-    
-    // Reset visuals
-    timer.classList.remove('low');
-    timerBar.style.transform = 'scaleX(1)';
-    timeLeftText.textContent = timeRemaining;
-    
-    // Clear any existing timer
-    if (window.timerInterval) {
-      clearInterval(window.timerInterval);
-    }
-    
-    // Start countdown
-    window.timerInterval = setInterval(() => {
-      timeRemaining--;
-      timeLeftText.textContent = timeRemaining;
-      
-      const progress = timeRemaining / timerLength;
-      timerBar.style.transform = `scaleX(${progress})`;
-      
-      if (timeRemaining <= 5) {
-        timer.classList.add('low');
-      }
-      
-      if (timeRemaining <= 0) {
-        clearInterval(window.timerInterval);
-        handleTimeUp();
-      }
-    }, 1000);
-  };
-
-  window.cancelQuestionTimer = function() {
-    if (window.timerInterval) {
-      clearInterval(window.timerInterval);
-      window.timerInterval = null;
-    }
-  };
-
-  function checkAnswer() {
-    if (!currentCell || currentAnswers.length === 0) {
-      return;
-    }
-
-    const userAnswer = document.getElementById('answer-input').value.trim().toLowerCase();
-
-    if (userAnswer === "") {
-      alert('Please enter an answer!');
-      return;
-    }
-
-    // Stop the timer
-    window.cancelQuestionTimer();
-
-    if (currentAnswers.includes(userAnswer)) {
-      updateScore(currentPoints);
-      showModal(true, currentPoints);
-    } else {
-      updateScore(-currentPoints);
-      showModal(false, currentPoints, currentAnswers);
-    }
+function timeUp() {
+  if (currentCell && currentAnswers.length > 0) {
+    updateScore(-currentPoints);
+    showModal(false, currentPoints, currentAnswers);
 
     currentCell.classList.add('answered');
     document.getElementById('answer-input').value = "";
     currentCell = null;
     currentAnswers = [];
     currentPoints = 0;
+
+    checkGameOver();
   }
 
-  function showModal(isCorrect, points, correctAnswersList = []) {
-    const modal = document.getElementById('modal');
-    const modalOverlay = document.getElementById('modal-overlay');
-    
-    modal.className = 'modal ' + (isCorrect ? 'correct' : 'wrong');
+function checkAnswer() {
+  if (!currentCell || currentAnswers.length === 0) {
+    return;
+  }
 
-    if (isCorrect) {
-      document.getElementById('modal-icon').textContent = '🎉';
-      document.getElementById('modal-title').textContent = 'CORRECT!';
-      document.getElementById('modal-points').textContent = '+$' + points;
-      document.getElementById('modal-message').textContent = 'Great job, Aggie!';
-      document.getElementById('correct-answers-section').style.display = 'none';
-    } else {
-      document.getElementById('modal-icon').textContent = '❌';
-      document.getElementById('modal-title').textContent = 'INCORRECT';
-      document.getElementById('modal-points').textContent = '-$' + points;
-      document.getElementById('modal-message').textContent = 'Better luck next time!';
-      document.getElementById('correct-answers-section').innerHTML = '<strong>Correct answers:</strong><br>' +
-        correctAnswersList.map(a => a.charAt(0).toUpperCase() + a.slice(1)).join(', ');
-      document.getElementById('correct-answers-section').style.display = 'block';
-    }
+  stopTimer();
+
+  const userAnswer = answerInput.value.trim().toLowerCase();
 
     modalOverlay.classList.add('show');
   }
 
-  // Add click event to all cells
-  document.querySelectorAll('.cell').forEach(cell => {
-    cell.addEventListener('click', function () {
-      if (!this.classList.contains('flipped') && !this.classList.contains('answered')) {
-        // If there's a previous cell that wasn't answered, flip it back
-        if (currentCell && currentCell !== this) {
-          currentCell.classList.remove('flipped');
-        }
+  if (currentAnswers.includes(userAnswer)) {
+    updateScore(currentPoints);
+    showModal(true, currentPoints);
+  } else {
+    updateScore(-currentPoints);
+    showModal(false, currentPoints, currentAnswers);
+  }
 
-        this.classList.add('flipped');
-        currentCell = this;
+  currentCell.classList.add('answered');
+  answerInput.value = "";
+  currentCell = null;
+  currentAnswers = [];
+  currentPoints = 0;
 
-        // Start music when the first card is turned over
-        startMusicIfNeeded();
+  checkGameOver();
+}
+
+function showModal(isCorrect, points, correctAnswersList = []) {
+  modal.className = 'modal ' + (isCorrect ? 'correct' : 'wrong');
 
         // Get the point value from the cell
         const pointText = this.querySelector('.cell-front').textContent;
@@ -251,20 +251,88 @@ window.addEventListener('DOMContentLoaded', () => {
     document.getElementById('modal-overlay').classList.remove('show');
   });
 
-  // Modal overlay click
-  document.getElementById('modal-overlay').addEventListener('click', function (e) {
-    if (e.target === this) {
-      this.classList.remove('show');
-    }
-  });
+function checkGameOver() {
+  const allCells = document.querySelectorAll('.cell');
+  const answeredCells = document.querySelectorAll('.cell.answered');
 
-  // Submit button
-  document.getElementById('submit-answer').addEventListener('click', checkAnswer);
+  if (allCells.length === answeredCells.length) {
+    setTimeout(() => {
+      saveScoreToLeaderboard();
+    }, 1000);
+  }
+}
 
-  // Enter key on input
-  document.getElementById('answer-input').addEventListener('keypress', function (event) {
-    if (event.key === 'Enter') {
-      checkAnswer();
-    }
-  });
+// ... (rest of your code before saveScoreToLeaderboard)
+
+
+async function saveScoreToLeaderboard() {
+  console.log('=== START SAVE ===');
+  console.log('Score value:', score);
+
+  let playerName = prompt('What is your name, Aggie?', 'Anonymous Aggie');
+  
+  if (playerName === null || playerName.trim() === '') {
+    playerName = 'Anonymous Aggie';
+  } else {
+    playerName = playerName.trim();
+  }
+  
+  console.log('Player name:', playerName);
+  console.log('Saving score:', playerName, score);
+
+  // 1. CHECK ADDED: Ensure Firebase connection is ready
+  if (!db || typeof db.collection !== 'function') {
+      console.error('Firebase Firestore not initialized or available.');
+      alert('Error: The database connection is not ready. Check Firebase setup.');
+      return;
+  }
+  
+  // The old 'if (score <= 0) { ... }' check has been REMOVED here.
+  
+  try {
+    const docData = {
+      name: playerName,
+      score: score, // This will now save negative, zero, or positive scores
+      timestamp: new Date()
+    };
+        
+    console.log('Step 3: Adding to firestore...');
+    const docRef = await db.collection('leaderboard').add(docData);
+        
+    console.log('Step 4: SUCCESS - Doc ID:', docRef.id);
+    
+    // 2. Alert and Redirection Logic
+    const message = `Game over, ${playerName}! Your final score of ${score} has been recorded to the leaderboard.`;
+    alert(message);
+    
+    console.log('Step 5: Redirecting...');
+    setTimeout(() => {
+        window.location.href = 'leaderboard.html';
+    }, 0); 
+
+  } catch (error) {
+    console.error('=== ERROR DURING SAVE ===');
+    console.error('Error object:', error);
+    console.error('Error message:', error.message);
+    alert(`Error saving score: ${error.message}. Please check console for details.`);
+  }
+}
+
+// ... (rest of your code after saveScoreToLeaderboard)
+
+submitButton.addEventListener('click', checkAnswer);
+
+answerInput.addEventListener('keypress', function (event) {
+  if (event.key === 'Enter') {
+    checkAnswer();
+  }
+});
+
+window.addEventListener('DOMContentLoaded', () => {
+  const savedTime = localStorage.getItem('timerLength');
+  if (savedTime) {
+    totalTime = parseInt(savedTime);
+    timeRemaining = totalTime;
+    document.getElementById('time-left').textContent = savedTime;
+  }
 });

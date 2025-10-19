@@ -1,0 +1,13 @@
+{
+  "name": "texas-am-jeopardy",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "live-server"
+  },
+  "dependencies": {
+    "firebase": "^12.4.0"
+  },
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  }
+}

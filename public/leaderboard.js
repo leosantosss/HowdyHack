@@ -1,59 +1,62 @@
-// leaderboard.js
-const STORAGE_KEY = 'leaderboard';
-
-// ---- Load & Save ----
-function loadScores() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
-}
-function saveScores(list) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
-}
-
-// ---- Add Score ----
-window.saveScore = function(name, score) {
-  const list = loadScores();
-  list.push({
-    name: (name || 'Player').trim() || 'Player',
-    score: Number(score) || 0,
-    ts: Date.now()
-  });
-  saveScores(list);
+// Firebase Configuration (Compatibility SDK - matches game script)
+const firebaseConfig = {
+  apiKey: "AIzaSyDJHdY1EuULi38otKAWEEP8idtgUUdNrXs",
+  authDomain: "texasamjeopardy.firebaseapp.com",
+  projectId: "texasamjeopardy",
+  storageBucket: "texasamjeopardy.firebasestorage.app",
+  messagingSenderId: "188279865719",
+  appId: "1:188279865719:web:c7773fd9559c65922e6172",
+  measurementId: "G-VMJ3PLNDMF"
 };
 
-// ---- Render Leaderboard ----
-function renderLeaderboard() {
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// Render Leaderboard from Firebase
+async function renderLeaderboard() {
   const tbody = document.getElementById('leaderboard-body');
   const empty = document.getElementById('no-scores');
-  const list = loadScores()
-    .sort((a, b) => b.score - a.score || a.ts - b.ts)
-    .slice(0, 10);
 
   tbody.innerHTML = '';
 
-  if (list.length === 0) {
-    empty.style.display = 'block';
-    return;
-  }
-  empty.style.display = 'none';
+  try {
+    const querySnapshot = await db.collection('leaderboard')
+      .orderBy('score', 'desc')
+      .limit(10)
+      .get();
 
-  list.forEach((row, i) => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td class="rank">${i + 1}</td>
-      <td class="player">${escapeHtml(row.name)}</td>
-      <td class="score">$${row.score.toLocaleString()}</td>
-      <td class="date">${new Date(row.ts).toLocaleDateString()}</td>
-    `;
-    tbody.appendChild(tr);
-  });
+    if (querySnapshot.empty) {
+      empty.style.display = 'block';
+      return;
+    }
+
+    empty.style.display = 'none';
+    let rank = 1;
+
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      const tr = document.createElement('tr');
+      
+      const date = data.timestamp ? data.timestamp.toDate() : new Date();
+      
+      tr.innerHTML = `
+        <td class="rank">${rank}</td>
+        <td class="player">${escapeHtml(data.name)}</td>
+        <td class="score">$${data.score.toLocaleString()}</td>
+        <td class="date">${date.toLocaleDateString()}</td>
+      `;
+      tbody.appendChild(tr);
+      rank++;
+    });
+  } catch (error) {
+    console.error("Error loading leaderboard:", error);
+    empty.style.display = 'block';
+    empty.textContent = 'Error loading leaderboard. Please try again.';
+  }
 }
 
-// ---- Sanitize text ----
+// Sanitize text to prevent XSS
 function escapeHtml(s) {
   return String(s)
     .replaceAll('&', '&amp;')
@@ -63,12 +66,5 @@ function escapeHtml(s) {
     .replaceAll("'", '&#39;');
 }
 
-// ---- Demo Button ----
-document.getElementById('add-demo').addEventListener('click', () => {
-  const name = prompt('Enter player name:') || 'Anonymous';
-  const score = Math.floor(Math.random() * 10000) + 1000;
-  saveScore(name, score);
-  renderLeaderboard();
-});
-
+// Load leaderboard when page loads
 document.addEventListener('DOMContentLoaded', renderLeaderboard);

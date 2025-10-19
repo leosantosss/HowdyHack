@@ -23,7 +23,8 @@ let musicStarted = false;
 function startMusicIfNeeded() {
   if (musicStarted) return;
   const soundEnabled = localStorage.getItem('soundEnabled');
-  if (soundEnabled === 'true') {
+  // Default to true if not set, otherwise use the saved value
+  if (soundEnabled !== 'false') {
     musicStarted = true;
     bgMusic.play().catch(err => {
       console.log('Music autoplay blocked by browser:', err);
@@ -270,6 +271,7 @@ answerInput.addEventListener('keypress', function (event) {
 });
 
 window.addEventListener('DOMContentLoaded', () => {
+  startMusicIfNeeded();
   const savedTime = localStorage.getItem('timerLength');
   if (savedTime) {
     totalTime = parseInt(savedTime);

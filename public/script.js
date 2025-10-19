@@ -1,4 +1,18 @@
-// Category data
+// Firebase Configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyDJHdY1EuULi38otKAWEEP8idtgUUdNrXs",
+  authDomain: "texasamjeopardy.firebaseapp.com",
+  projectId: "texasamjeopardy",
+  storageBucket: "texasamjeopardy.firebasestorage.app",
+  messagingSenderId: "188279865719",
+  appId: "1:188279865719:web:c7773fd9559c65922e6172",
+  measurementId: "G-VMJ3PLNDMF"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
 const CATEGORIES = [
   {
     name: "Aggie Traditions",
@@ -62,19 +76,14 @@ const CATEGORIES = [
   },
 ];
 
-// Initialize score
 let score = 0;
-
-// Track the currently selected cell
 let currentCell = null;
 let currentAnswers = [];
 let currentPoints = 0;
 
 let timerInterval = null;
-let timeRemaining = 15; // default 15 seconds
+let timeRemaining = 15;
 let totalTime = 15;
-
-
 
 const modalOverlay = document.getElementById('modal-overlay');
 const modal = document.getElementById('modal');
@@ -83,19 +92,15 @@ const modalTitle = document.getElementById('modal-title');
 const modalPoints = document.getElementById('modal-points');
 const modalMessage = document.getElementById('modal-message');
 const correctAnswersSection = document.getElementById('correct-answers-section');
-const modalClose = document.getElementById('modal-close')
+const modalClose = document.getElementById('modal-close');
 
-// Get input and button elements
 const answerInput = document.getElementById('answer-input');
 const submitButton = document.getElementById('submit-answer');
 const scoreDisplay = document.getElementById('score-display');
 
-// Add click event to all cells
 document.querySelectorAll('.cell').forEach(cell => {
   cell.addEventListener('click', function () {
-    // Only flip if not already flipped or answered
     if (!this.classList.contains('flipped') && !this.classList.contains('answered')) {
-      // If there's a previous cell that wasn't answered, flip it back
       if (currentCell && currentCell !== this) {
         currentCell.classList.remove('flipped');
       }
@@ -103,58 +108,47 @@ document.querySelectorAll('.cell').forEach(cell => {
       this.classList.add('flipped');
       currentCell = this;
 
-      // Get the point value from the cell
       const pointText = this.querySelector('.cell-front').textContent;
       currentPoints = parseInt(pointText.replace('$', ''));
 
-      // Support multiple comma-separated answers
       currentAnswers = this.getAttribute('data-answer')
         .split(',')
         .map(a => a.trim().toLowerCase());
 
-      // Start the timer
       startTimer();
     }
   });
 });
 
-// Function to update score display
 function updateScore(points) {
   score += points;
   scoreDisplay.textContent = score;
 }
 
 function startTimer() {
-  // Get timer length from settings (if you have settings stored)
   const savedTime = localStorage.getItem('timerLength');
   totalTime = savedTime ? parseInt(savedTime) : 15;
   timeRemaining = totalTime;
 
-  // Update display
   document.getElementById('time-left').textContent = timeRemaining;
   document.getElementById('timer-bar').style.transform = 'scaleX(1)';
   document.getElementById('timer').classList.remove('low');
 
-  // Clear any existing timer
   if (timerInterval) {
     clearInterval(timerInterval);
   }
 
-  // Start countdown
   timerInterval = setInterval(() => {
     timeRemaining--;
     document.getElementById('time-left').textContent = timeRemaining;
 
-    // Update progress bar
     const progress = timeRemaining / totalTime;
     document.getElementById('timer-bar').style.transform = `scaleX(${progress})`;
 
-    // Add "low" class when under 5 seconds
     if (timeRemaining <= 5) {
       document.getElementById('timer').classList.add('low');
     }
 
-    // Time's up!
     if (timeRemaining <= 0) {
       clearInterval(timerInterval);
       timeUp();
@@ -162,7 +156,6 @@ function startTimer() {
   }, 1000);
 }
 
-// Stop the timer
 function stopTimer() {
   if (timerInterval) {
     clearInterval(timerInterval);
@@ -170,7 +163,6 @@ function stopTimer() {
   }
 }
 
-// When time runs out
 function timeUp() {
   if (currentCell && currentAnswers.length > 0) {
     updateScore(-currentPoints);
@@ -181,16 +173,16 @@ function timeUp() {
     currentCell = null;
     currentAnswers = [];
     currentPoints = 0;
+
+    checkGameOver();
   }
 }
 
-// Function to check answer
 function checkAnswer() {
   if (!currentCell || currentAnswers.length === 0) {
-    return; // No cell selected
+    return;
   }
 
-  // Stop the timer
   stopTimer();
 
   const userAnswer = answerInput.value.trim().toLowerCase();
@@ -200,7 +192,6 @@ function checkAnswer() {
     return;
   }
 
-  // Check if the user's answer matches any of the valid ones
   if (currentAnswers.includes(userAnswer)) {
     updateScore(currentPoints);
     showModal(true, currentPoints);
@@ -210,13 +201,14 @@ function checkAnswer() {
   }
 
   currentCell.classList.add('answered');
-
-  // Clear input and reset current cell
   answerInput.value = "";
   currentCell = null;
   currentAnswers = [];
   currentPoints = 0;
+
+  checkGameOver();
 }
+
 function showModal(isCorrect, points, correctAnswersList = []) {
   modal.className = 'modal ' + (isCorrect ? 'correct' : 'wrong');
 
@@ -249,10 +241,77 @@ modalOverlay.addEventListener('click', function (e) {
   }
 });
 
-// Submit button click event
+function checkGameOver() {
+  const allCells = document.querySelectorAll('.cell');
+  const answeredCells = document.querySelectorAll('.cell.answered');
+
+  if (allCells.length === answeredCells.length) {
+    setTimeout(() => {
+      saveScoreToLeaderboard();
+    }, 1000);
+  }
+}
+
+// ... (rest of your code before saveScoreToLeaderboard)
+
+
+async function saveScoreToLeaderboard() {
+  console.log('=== START SAVE ===');
+  console.log('Score value:', score);
+
+  let playerName = prompt('What is your name, Aggie?', 'Anonymous Aggie');
+  
+  if (playerName === null || playerName.trim() === '') {
+    playerName = 'Anonymous Aggie';
+  } else {
+    playerName = playerName.trim();
+  }
+  
+  console.log('Player name:', playerName);
+  console.log('Saving score:', playerName, score);
+
+  // 1. CHECK ADDED: Ensure Firebase connection is ready
+  if (!db || typeof db.collection !== 'function') {
+      console.error('Firebase Firestore not initialized or available.');
+      alert('Error: The database connection is not ready. Check Firebase setup.');
+      return;
+  }
+  
+  // The old 'if (score <= 0) { ... }' check has been REMOVED here.
+  
+  try {
+    const docData = {
+      name: playerName,
+      score: score, // This will now save negative, zero, or positive scores
+      timestamp: new Date()
+    };
+        
+    console.log('Step 3: Adding to firestore...');
+    const docRef = await db.collection('leaderboard').add(docData);
+        
+    console.log('Step 4: SUCCESS - Doc ID:', docRef.id);
+    
+    // 2. Alert and Redirection Logic
+    const message = `Game over, ${playerName}! Your final score of ${score} has been recorded to the leaderboard.`;
+    alert(message);
+    
+    console.log('Step 5: Redirecting...');
+    setTimeout(() => {
+        window.location.href = 'leaderboard.html';
+    }, 0); 
+
+  } catch (error) {
+    console.error('=== ERROR DURING SAVE ===');
+    console.error('Error object:', error);
+    console.error('Error message:', error.message);
+    alert(`Error saving score: ${error.message}. Please check console for details.`);
+  }
+}
+
+// ... (rest of your code after saveScoreToLeaderboard)
+
 submitButton.addEventListener('click', checkAnswer);
 
-// Enter key press event
 answerInput.addEventListener('keypress', function (event) {
   if (event.key === 'Enter') {
     checkAnswer();
@@ -260,11 +319,10 @@ answerInput.addEventListener('keypress', function (event) {
 });
 
 window.addEventListener('DOMContentLoaded', () => {
-    const savedTime = localStorage.getItem('timerLength');
-    if (savedTime) {
-        totalTime = parseInt(savedTime);
-        timeRemaining = totalTime;
-        document.getElementById('time-left').textContent = savedTime;
-    }
+  const savedTime = localStorage.getItem('timerLength');
+  if (savedTime) {
+    totalTime = parseInt(savedTime);
+    timeRemaining = totalTime;
+    document.getElementById('time-left').textContent = savedTime;
+  }
 });
-

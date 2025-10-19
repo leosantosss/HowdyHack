@@ -16,47 +16,6 @@
       padding: 0;
     }
 
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      color: rgb(255, 255, 255);
-      border-bottom: 3px solid black;
-      background-color: rgba(139, 0, 0, 0.8);
-      font-size: 2.25rem;
-      padding: 0.5rem 1rem;
-    }
-
-    .topbar h2 a {
-      color: #fdf7e3;
-      text-decoration: none;
-      font-size: 2rem;
-    }
-
-    .topbar ul {
-      list-style: none;
-      display: flex;
-      gap: 25px;
-      margin: 0;
-      padding: 0;
-    }
-
-    .topbar a {
-      color: #fdf7e3;
-      text-decoration: none;
-      font-size: 1.6rem;
-      transition: color 0.2s ease;
-    }
-
-    .topbar a:hover {
-      color: #caa052;
-    }
-
-    .main {
-
-      margin-top: 50px;
-    }
-
     .leaderboard-card {
       width: min(90vw, 800px);
       margin: 2rem auto;
@@ -98,35 +57,20 @@
       font-size: 1rem;
       margin-top: 10px;
     }
-
-    button {
-      background-color: #caa052;
-      border: none;
-      color: #500000;
-      padding: 10px 20px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 1rem;
-      margin-top: 10px;
-    }
-
-    button:hover {
-      background-color: #e0b762;
-    }
   </style>
 </head>
 
 <body>
-  <header class = "topbar">
-        <h2><span><a href = "index.html">Texas A&M Jeopardy</a></span></h2>
-        <nav>
-            <ul>
-                <li><a href="howtoplay.html">How to Play?</a></li>
-                <li><a href = "leaderboard.html">Leaderboard</a></li>
-                <li><a href = "Settings.html">Settings</a></li>
-            </ul>
-        </nav>
-    </header>
+  <header class="topbar">
+    <h2><span><a href="index.html">Texas A&M Jeopardy</a></span></h2>
+    <nav>
+      <ul>
+        <li><a href="howtoplay.html">How to Play?</a></li>
+        <li><a href="leaderboard.html">Leaderboard</a></li>
+        <li><a href="settings.html">Settings</a></li>
+      </ul>
+    </nav>
+  </header>
 
   <main class="main">
     <h1>Top 10 Leaderboard</h1>
@@ -144,9 +88,13 @@
         <tbody id="leaderboard-body"></tbody>
       </table>
       <p id="no-scores" class="muted" style="display:none;">No scores yet — be the first to play!</p>
-      <button id="add-demo">Add Demo Score</button>
     </div>
   </main>
+
+  <!-- Modular SDK - No CDN scripts needed -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
   <script src="leaderboard.js"></script>
 </body>

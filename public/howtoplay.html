@@ -1,12 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- 1) Apply saved theme ASAP -->
+  <script>
+    (function () {
+      const t = localStorage.getItem('theme') || 'dark';
+      if (t === 'light') {
+        document.documentElement.classList.add('light');
+        // body might not exist yet; add again after DOMContentLoaded too:
+        window.addEventListener('DOMContentLoaded', () => document.body.classList.add('light'), { once:true });
+      }
+    })();
+  </script>
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>How to Play | Texas A&M Jeopardy</title>
+
+  <!-- 2) Your shared stylesheet should also define theme vars for other pages -->
   <link rel="stylesheet" href="styles.css" />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet" />
 
+  <!-- 3) Page-specific styles that RESPECT theme variables + light overrides -->
   <style>
     :root{
       --maroon:#500000;
@@ -14,19 +29,37 @@
       --gold:#caa052;
       --cream:#fdf7e3;
       --cream-d:#e7dcc1;
+
+      /* defaults (dark) */
+      --bg-grad-top: var(--maroon);
+      --bg-grad-bottom: var(--maroon-2);
+      --text: var(--cream);
+      --panel-bg: rgba(255,255,255,0.03);
+      --panel-border: rgba(255,255,255,0.06);
+      --card-bg: rgb(134, 22, 22);
+    }
+
+    /* Light overrides */
+    body.light {
+      --bg-grad-top: #fafafa;
+      --bg-grad-bottom: #e9e9e9;
+      --text: #2b0b0b;
+      --panel-bg: rgba(0,0,0,0.03);
+      --panel-border: rgba(0,0,0,0.08);
+      --card-bg: #ffffff;
     }
 
     body {
-      min-height: 10vh;
+      min-height: 100vh;
       margin: 0;
       background:
         radial-gradient(1200px 600px at 50% -10%, rgba(255,255,255,0.06), transparent 80%),
-        linear-gradient(180deg, var(--maroon) 0%, var(--maroon-2) 100%);
-      color: var(--cream);
+        linear-gradient(180deg, var(--bg-grad-top) 0%, var(--bg-grad-bottom) 100%);
+      color: var(--text);
       font-family: 'Bebas Neue', sans-serif;
+      transition: background .25s ease, color .25s ease;
     }
 
-   
     .topbar a.active { color: var(--gold); text-decoration: underline; }
 
     .main {
@@ -47,13 +80,13 @@
         0 0 20px rgba(202,160,82,0.35);
     }
 
-
     .instructions {
-      background:rgb(134, 22, 22);
-      border: 1px solid rgba(255,255,255,0.12);
+      background: var(--card-bg);
+      border: 1px solid var(--panel-border);
       border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.18);
       padding: 22px clamp(18px, 3vw, 28px);
+      transition: background .25s ease, color .25s ease, border-color .25s ease, box-shadow .25s ease;
     }
 
     .instructions ol {
@@ -72,8 +105,8 @@
       gap: 14px;
       padding: 14px 12px;
       border-radius: 12px;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.06);
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
       transition: transform .15s ease, background .2s ease, border-color .2s ease;
     }
     .instructions li::before {
@@ -90,25 +123,30 @@
     }
     .instructions li:hover {
       transform: translateY(-2px);
-      background: rgba(255,255,255,0.06);
-      border-color: rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.18);
     }
+    body.light .instructions li:hover {
+      background: rgba(0,0,0,0.05);
+      border-color: rgba(0,0,0,0.12);
+    }
+
     .instructions li span {
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       font-size: clamp(1.05rem, 1.8vw, 1.15rem);
       line-height: 1.45;
-      color: var(--cream);
+      color: var(--text);
     }
 
-  
     .tip {
       margin-top: 8px;
-      color: var(--cream-d);
+      color: #cfc3a4; /* still looks fine in light */
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       font-size: 0.98rem;
       opacity: 0.92;
       text-align: center;
     }
+    body.light .tip { color: #6b3b3b; }
 
     .back-btn {
       display: grid;

@@ -62,209 +62,209 @@ const CATEGORIES = [
   },
 ];
 
-// Initialize score
-let score = 0;
+// Background music setup
+const bgMusic = new Audio('jeopardy_theme.mp3');
+bgMusic.loop = true;
+bgMusic.volume = 0.6;
+bgMusic.preload = 'auto';
 
-// Track the currently selected cell
+let _jeopardyMusicStarted = false;
+
+function startMusicIfNeeded() {
+  if (_jeopardyMusicStarted) return;
+  if (localStorage.getItem('soundEnabled') === 'true') {
+    _jeopardyMusicStarted = true;
+    bgMusic.play().catch(() => {});
+  }
+}
+
+function stopMusic() {
+  if (!_jeopardyMusicStarted) return;
+  bgMusic.pause();
+  bgMusic.currentTime = 0;
+  _jeopardyMusicStarted = false;
+}
+
+// Initialize game state
+let score = 0;
 let currentCell = null;
 let currentAnswers = [];
 let currentPoints = 0;
 
-let timerInterval = null;
-let timeRemaining = 15; // default 15 seconds
-let totalTime = 15;
+// Wait for DOM to be ready
+window.addEventListener('DOMContentLoaded', () => {
+  
+  // Function to update score display
+  function updateScore(points) {
+    score += points;
+    document.getElementById('score-display').textContent = score;
+  }
 
+  // Function to handle time up
+  function handleTimeUp() {
+    if (currentCell && currentAnswers.length > 0) {
+      updateScore(-currentPoints);
+      showModal(false, currentPoints, currentAnswers);
+      
+      currentCell.classList.add('answered');
+      document.getElementById('answer-input').value = "";
+      currentCell = null;
+      currentAnswers = [];
+      currentPoints = 0;
+    }
+  }
 
-
-const modalOverlay = document.getElementById('modal-overlay');
-const modal = document.getElementById('modal');
-const modalIcon = document.getElementById('modal-icon');
-const modalTitle = document.getElementById('modal-title');
-const modalPoints = document.getElementById('modal-points');
-const modalMessage = document.getElementById('modal-message');
-const correctAnswersSection = document.getElementById('correct-answers-section');
-const modalClose = document.getElementById('modal-close')
-
-// Get input and button elements
-const answerInput = document.getElementById('answer-input');
-const submitButton = document.getElementById('submit-answer');
-const scoreDisplay = document.getElementById('score-display');
-
-// Add click event to all cells
-document.querySelectorAll('.cell').forEach(cell => {
-  cell.addEventListener('click', function () {
-    // Only flip if not already flipped or answered
-    if (!this.classList.contains('flipped') && !this.classList.contains('answered')) {
-      // If there's a previous cell that wasn't answered, flip it back
-      if (currentCell && currentCell !== this) {
-        currentCell.classList.remove('flipped');
+  // Override timer.js functions with local versions that work with our game state
+  window.beginQuestionTimer = function(penalty) {
+    const timerLength = parseInt(localStorage.getItem('timerLength')) || 15;
+    let timeRemaining = timerLength;
+    
+    const timerBar = document.getElementById('timer-bar');
+    const timeLeftText = document.getElementById('time-left');
+    const timer = document.getElementById('timer');
+    
+    if (!timerBar || !timeLeftText || !timer) return;
+    
+    // Reset visuals
+    timer.classList.remove('low');
+    timerBar.style.transform = 'scaleX(1)';
+    timeLeftText.textContent = timeRemaining;
+    
+    // Clear any existing timer
+    if (window.timerInterval) {
+      clearInterval(window.timerInterval);
+    }
+    
+    // Start countdown
+    window.timerInterval = setInterval(() => {
+      timeRemaining--;
+      timeLeftText.textContent = timeRemaining;
+      
+      const progress = timeRemaining / timerLength;
+      timerBar.style.transform = `scaleX(${progress})`;
+      
+      if (timeRemaining <= 5) {
+        timer.classList.add('low');
       }
+      
+      if (timeRemaining <= 0) {
+        clearInterval(window.timerInterval);
+        handleTimeUp();
+      }
+    }, 1000);
+  };
 
-      this.classList.add('flipped');
-      currentCell = this;
-
-      // Get the point value from the cell
-      const pointText = this.querySelector('.cell-front').textContent;
-      currentPoints = parseInt(pointText.replace('$', ''));
-
-      // Support multiple comma-separated answers
-      currentAnswers = this.getAttribute('data-answer')
-        .split(',')
-        .map(a => a.trim().toLowerCase());
-
-      // Start the timer
-      startTimer();
+  window.cancelQuestionTimer = function() {
+    if (window.timerInterval) {
+      clearInterval(window.timerInterval);
+      window.timerInterval = null;
     }
-  });
-});
+  };
 
-// Function to update score display
-function updateScore(points) {
-  score += points;
-  scoreDisplay.textContent = score;
-}
-
-function startTimer() {
-  // Get timer length from settings (if you have settings stored)
-  const savedTime = localStorage.getItem('timerLength');
-  totalTime = savedTime ? parseInt(savedTime) : 15;
-  timeRemaining = totalTime;
-
-  // Update display
-  document.getElementById('time-left').textContent = timeRemaining;
-  document.getElementById('timer-bar').style.transform = 'scaleX(1)';
-  document.getElementById('timer').classList.remove('low');
-
-  // Clear any existing timer
-  if (timerInterval) {
-    clearInterval(timerInterval);
-  }
-
-  // Start countdown
-  timerInterval = setInterval(() => {
-    timeRemaining--;
-    document.getElementById('time-left').textContent = timeRemaining;
-
-    // Update progress bar
-    const progress = timeRemaining / totalTime;
-    document.getElementById('timer-bar').style.transform = `scaleX(${progress})`;
-
-    // Add "low" class when under 5 seconds
-    if (timeRemaining <= 5) {
-      document.getElementById('timer').classList.add('low');
+  function checkAnswer() {
+    if (!currentCell || currentAnswers.length === 0) {
+      return;
     }
 
-    // Time's up!
-    if (timeRemaining <= 0) {
-      clearInterval(timerInterval);
-      timeUp();
+    const userAnswer = document.getElementById('answer-input').value.trim().toLowerCase();
+
+    if (userAnswer === "") {
+      alert('Please enter an answer!');
+      return;
     }
-  }, 1000);
-}
 
-// Stop the timer
-function stopTimer() {
-  if (timerInterval) {
-    clearInterval(timerInterval);
-    timerInterval = null;
-  }
-}
+    // Stop the timer
+    window.cancelQuestionTimer();
 
-// When time runs out
-function timeUp() {
-  if (currentCell && currentAnswers.length > 0) {
-    updateScore(-currentPoints);
-    showModal(false, currentPoints, currentAnswers);
+    if (currentAnswers.includes(userAnswer)) {
+      updateScore(currentPoints);
+      showModal(true, currentPoints);
+    } else {
+      updateScore(-currentPoints);
+      showModal(false, currentPoints, currentAnswers);
+    }
 
     currentCell.classList.add('answered');
-    answerInput.value = "";
+    document.getElementById('answer-input').value = "";
     currentCell = null;
     currentAnswers = [];
     currentPoints = 0;
   }
-}
 
-// Function to check answer
-function checkAnswer() {
-  if (!currentCell || currentAnswers.length === 0) {
-    return; // No cell selected
-  }
+  function showModal(isCorrect, points, correctAnswersList = []) {
+    const modal = document.getElementById('modal');
+    const modalOverlay = document.getElementById('modal-overlay');
+    
+    modal.className = 'modal ' + (isCorrect ? 'correct' : 'wrong');
 
-  // Stop the timer
-  stopTimer();
-
-  const userAnswer = answerInput.value.trim().toLowerCase();
-
-  if (userAnswer === "") {
-    showModal(false, 0, ['Please enter an answer!']);
-    return;
-  }
-
-  // Check if the user's answer matches any of the valid ones
-  if (currentAnswers.includes(userAnswer)) {
-    updateScore(currentPoints);
-    showModal(true, currentPoints);
-  } else {
-    updateScore(-currentPoints);
-    showModal(false, currentPoints, currentAnswers);
-  }
-
-  currentCell.classList.add('answered');
-
-  // Clear input and reset current cell
-  answerInput.value = "";
-  currentCell = null;
-  currentAnswers = [];
-  currentPoints = 0;
-}
-function showModal(isCorrect, points, correctAnswersList = []) {
-  modal.className = 'modal ' + (isCorrect ? 'correct' : 'wrong');
-
-  if (isCorrect) {
-    modalIcon.textContent = '🎉';
-    modalTitle.textContent = 'CORRECT!';
-    modalPoints.textContent = '+$' + points;
-    modalMessage.textContent = 'Great job, Aggie!';
-    correctAnswersSection.style.display = 'none';
-  } else {
-    modalIcon.textContent = '❌';
-    modalTitle.textContent = 'INCORRECT';
-    modalPoints.textContent = '-$' + points;
-    modalMessage.textContent = 'Better luck next time!';
-    correctAnswersSection.innerHTML = '<strong>Correct answers:</strong><br>' +
-      correctAnswersList.map(a => a.charAt(0).toUpperCase() + a.slice(1)).join(', ');
-    correctAnswersSection.style.display = 'block';
-  }
-
-  modalOverlay.classList.add('show');
-}
-
-modalClose.addEventListener('click', function () {
-  modalOverlay.classList.remove('show');
-});
-
-modalOverlay.addEventListener('click', function (e) {
-  if (e.target === modalOverlay) {
-    modalOverlay.classList.remove('show');
-  }
-});
-
-// Submit button click event
-submitButton.addEventListener('click', checkAnswer);
-
-// Enter key press event
-answerInput.addEventListener('keypress', function (event) {
-  if (event.key === 'Enter') {
-    checkAnswer();
-  }
-});
-
-window.addEventListener('DOMContentLoaded', () => {
-    const savedTime = localStorage.getItem('timerLength');
-    if (savedTime) {
-        totalTime = parseInt(savedTime);
-        timeRemaining = totalTime;
-        document.getElementById('time-left').textContent = savedTime;
+    if (isCorrect) {
+      document.getElementById('modal-icon').textContent = '🎉';
+      document.getElementById('modal-title').textContent = 'CORRECT!';
+      document.getElementById('modal-points').textContent = '+$' + points;
+      document.getElementById('modal-message').textContent = 'Great job, Aggie!';
+      document.getElementById('correct-answers-section').style.display = 'none';
+    } else {
+      document.getElementById('modal-icon').textContent = '❌';
+      document.getElementById('modal-title').textContent = 'INCORRECT';
+      document.getElementById('modal-points').textContent = '-$' + points;
+      document.getElementById('modal-message').textContent = 'Better luck next time!';
+      document.getElementById('correct-answers-section').innerHTML = '<strong>Correct answers:</strong><br>' +
+        correctAnswersList.map(a => a.charAt(0).toUpperCase() + a.slice(1)).join(', ');
+      document.getElementById('correct-answers-section').style.display = 'block';
     }
-});
 
+    modalOverlay.classList.add('show');
+  }
+
+  // Add click event to all cells
+  document.querySelectorAll('.cell').forEach(cell => {
+    cell.addEventListener('click', function () {
+      if (!this.classList.contains('flipped') && !this.classList.contains('answered')) {
+        // If there's a previous cell that wasn't answered, flip it back
+        if (currentCell && currentCell !== this) {
+          currentCell.classList.remove('flipped');
+        }
+
+        this.classList.add('flipped');
+        currentCell = this;
+
+        // Start music when the first card is turned over
+        startMusicIfNeeded();
+
+        // Get the point value from the cell
+        const pointText = this.querySelector('.cell-front').textContent;
+        currentPoints = parseInt(pointText.replace('$', ''));
+
+        // Support multiple comma-separated answers
+        currentAnswers = this.getAttribute('data-answer')
+          .split(',')
+          .map(a => a.trim().toLowerCase());
+
+        // Start the timer with penalty
+        window.beginQuestionTimer(currentPoints);
+      }
+    });
+  });
+
+  // Modal close button
+  document.getElementById('modal-close').addEventListener('click', function () {
+    document.getElementById('modal-overlay').classList.remove('show');
+  });
+
+  // Modal overlay click
+  document.getElementById('modal-overlay').addEventListener('click', function (e) {
+    if (e.target === this) {
+      this.classList.remove('show');
+    }
+  });
+
+  // Submit button
+  document.getElementById('submit-answer').addEventListener('click', checkAnswer);
+
+  // Enter key on input
+  document.getElementById('answer-input').addEventListener('keypress', function (event) {
+    if (event.key === 'Enter') {
+      checkAnswer();
+    }
+  });
+});

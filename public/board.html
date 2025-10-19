@@ -25,7 +25,13 @@
         <div class="score">
             <h1>Score:<span id="score-display">0</span></h1>
         </div>
+        <!-- Timer Bar (reads length from settings; controlled by timer.js/script.js) -->
+        <div class="timer" id="timer">
+            <div class="timer-bar" id="timer-bar"></div>
+            <span class="timer-text"><span id="time-left">15</span>s</span>
+        </div>
         <div class="board">
+
 
 
             <div class="categories">Aggie Traditions</div>
@@ -251,6 +257,9 @@
         </div>
     </div>
     <script src="script.js"></script>
+    <script src = "timer.js"></script>
+    <script src = "settings-store.js"></script>
 </body>
+
 
 </html>

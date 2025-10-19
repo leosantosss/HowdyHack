@@ -7,8 +7,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css"/>
   <style>
-
-    
     body {
       background-color: #2d0a0a;
       color: #fdf7e3;
@@ -23,19 +21,26 @@
       width: min(90vw, 600px);
       margin: 3rem auto;
       box-shadow: 0 0 20px rgba(0,0,0,0.4);
-      
     }
 
     .setting-item {
       margin: 15px 0;
       text-align: left;
       font-size: 2rem;
-  
-      
     }
 
     input[type="range"] {
       width: 100%; 
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 6px;
+      background-color: #500000;
+      color: #fdf7e3;
+      border: 2px solid #caa052;
+      border-radius: 5px;
+      font-size: 1.2rem;
     }
 
     button {
@@ -47,10 +52,22 @@
       cursor: pointer;
       margin-top: 20px;
       font-size: 1.1rem;
+      font-family: 'Bebas Neue', sans-serif;
     }
 
     button:hover {
       background-color: #e0b762;
+    }
+
+    .save-button {
+      background-color: #2d8f2d;
+      color: white;
+      font-size: 1.3rem;
+      padding: 12px 30px;
+    }
+
+    .save-button:hover {
+      background-color: #3aad3a;
     }
   </style>
 </head>
@@ -61,7 +78,7 @@
       <ul>
         <li><a href="howtoplay.html">How to Play?</a></li>
         <li><a href="leaderboard.html">Leaderboard</a></li>
-        <li><a href="Settings.html">Settings</a></li>
+        <li><a href="settings.html">Settings</a></li>
       </ul>
     </nav>
   </header>
@@ -83,8 +100,10 @@
 
       <div class="setting-item">
         <label for="playerName">Player Name:</label><br>
-        <input type="text" id="playerName" placeholder="Enter your name" style="width:100%;padding:6px;">
+        <input type="text" id="playerName" placeholder="Enter your name">
       </div>
+
+      <button class="save-button" id="saveSettings">Save Settings</button>
 
       <div class="setting-item">
         <button id="resetLeaderboard">Reset Leaderboard</button>
@@ -93,13 +112,52 @@
   </main>
 
   <script>
+    // Load saved settings on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedTimer = localStorage.getItem('timerLength');
+      const savedSound = localStorage.getItem('soundEnabled');
+      const savedName = localStorage.getItem('playerName');
+
+      if (savedTimer) {
+        document.getElementById('timerLength').value = savedTimer;
+        document.getElementById('timerValue').textContent = savedTimer;
+      }
+
+      if (savedSound !== null) {
+        document.getElementById('soundToggle').checked = savedSound === 'true';
+      }
+
+      if (savedName) {
+        document.getElementById('playerName').value = savedName;
+      }
+    });
+
+    // Update timer value display as slider moves
     const timerSlider = document.getElementById('timerLength');
     const timerValue = document.getElementById('timerValue');
-    timerSlider.oninput = () => timerValue.textContent = timerSlider.value;
+    timerSlider.oninput = () => {
+      timerValue.textContent = timerSlider.value;
+    };
 
+    // Save all settings
+    document.getElementById('saveSettings').addEventListener('click', () => {
+      const timerLength = document.getElementById('timerLength').value;
+      const soundEnabled = document.getElementById('soundToggle').checked;
+      const playerName = document.getElementById('playerName').value;
+
+      localStorage.setItem('timerLength', timerLength);
+      localStorage.setItem('soundEnabled', soundEnabled);
+      localStorage.setItem('playerName', playerName);
+
+      alert('Settings saved successfully! ✓');
+    });
+
+    // Reset leaderboard
     document.getElementById('resetLeaderboard').addEventListener('click', () => {
-      localStorage.removeItem('leaderboard');
-      alert('Leaderboard has been reset!');
+      if (confirm('Are you sure you want to reset the leaderboard?')) {
+        localStorage.removeItem('leaderboard');
+        alert('Leaderboard has been reset!');
+      }
     });
   </script>
 </body>

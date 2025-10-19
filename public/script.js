@@ -1,69 +1,9 @@
-// Track the currently selected cell
-let currentCell = null;
-let currentAnswer = "";
-
-// Get input and button elements
-const answerInput = document.getElementById('answer-input');
-const submitButton = document.getElementById('submit-answer');
-
-// Add click event to all cells
-document.querySelectorAll('.cell').forEach(cell => {
-    cell.addEventListener('click', function() {
-        // Only flip if not already flipped
-        if (!this.classList.contains('flipped')) {
-            // If there's a previous cell that wasn't answered, flip it back
-            if (currentCell && currentCell !== this) {
-                currentCell.classList.remove('flipped');
-            }
-            
-            this.classList.add('flipped');
-            currentCell = this;
-            currentAnswer = this.getAttribute('data-answer');
-        }
-    });
-});
-
-// Function to check answer
-function checkAnswer() {
-    if (!currentCell || !currentAnswer) {
-        return; // No cell selected
-    }
-    
-    const userAnswer = answerInput.value.trim();
-    
-    if (userAnswer === "") {
-        alert("Please enter an answer!");
-        return;
-    }
-    
-    // Compare answers (case-insensitive)
-    if (userAnswer.toLowerCase() === currentAnswer.toLowerCase()) {
-        alert("Correct! 🎉");
-        // You can add score logic here
-    } else {
-        alert(`Wrong! The correct answer was: ${currentAnswer}`);
-    }
-    
-    // Clear input and reset current cell
-    answerInput.value = "";
-    currentCell = null;
-    currentAnswer = "";
-}
-
-// Submit button click event
-submitButton.addEventListener('click', checkAnswer);
-
-// Enter key press event
-answerInput.addEventListener('keypress', function(event) {
-    if (event.key === 'Enter') {
-        checkAnswer();
-    }
-});
+// Category data
 const CATEGORIES = [
   {
     name: "Aggie Traditions",
     clues: [
-      { points:200, q:"Thumbs-up hand sign used by Aggies.", a:["gig 'em","gig em","gig’em","gigem","gigem!","gig 'em!"] },
+      { points:200, q:"Thumbs-up hand sign used by Aggies.", a:["gig 'em","gig em","gig'em","gigem","gigem!","gig 'em!"] },
       { points:400, q:"The solemn campus ceremony honoring recently fallen students, held the first Tuesday of the month.", a:["silver taps","silvertaps"] },
       { points:600, q:"Annual worldwide remembrance where Aggies answer 'Here' for the fallen.", a:["aggie muster","muster"] },
       { points:800, q:"This coveted piece of jewelry symbolizes Aggie achievement and unity.", a:["aggie ring","the aggie ring","ring"] },
@@ -76,8 +16,8 @@ const CATEGORIES = [
       { points:200, q:"Home stadium of Aggie Football.", a:["kyle field"] },
       { points:400, q:"Historic tree near the Academic Building known for proposals.", a:["century tree","the century tree"] },
       { points:600, q:"Memorial site dedicated to the 1999 tragedy.", a:["bonfire memorial","aggie bonfire memorial","bonfire"] },
-      { points:800, q:"This building’s dome is an iconic symbol of campus.", a:["academic building","the academic building"] },
-      { points:1000,q:"This collie’s residence is guarded by the Corps’ Mascot Company.", a:["reveille’s dorm","reveille dorm","reveille’s residence","reveille residence","reveille"] },
+      { points:800, q:"This building's dome is an iconic symbol of campus.", a:["academic building","the academic building"] },
+      { points:1000,q:"This collie's residence is guarded by the Corps' Mascot Company.", a:["reveille's dorm","reveille dorm","reveille's residence","reveille residence","reveille"] },
     ]
   },
   {
@@ -97,7 +37,7 @@ const CATEGORIES = [
       { points:400, q:"The live canine mascot of Texas A&M.", a:["reveille"] },
       { points:600, q:"Mass maroon-shirt crowd initiative first launched in 1998.", a:["maroon out","maroon-out","maroonout"] },
       { points:800, q:"Nickname for the dedicated standing student section at football games.", a:["12th man","the 12th man","twelfth man"] },
-      { points:1000,q:"This drum line’s booming cadence fires up Kyle Field.", a:["fightin' texas aggie band","fightin texas aggie band","texas aggie band","aggie band"] },
+      { points:1000,q:"This drum line's booming cadence fires up Kyle Field.", a:["fightin' texas aggie band","fightin texas aggie band","texas aggie band","aggie band"] },
     ]
   },
   {
@@ -116,8 +56,75 @@ const CATEGORIES = [
       { points:200, q:"City that, with Bryan, forms the metro area Aggies call home.", a:["college station"] },
       { points:400, q:"Major on-campus event where freshmen learn Aggie spirit before classes.", a:["fish camp","fishcamp"] },
       { points:600, q:"On-campus transportation system used by many students.", a:["aggie spirit bus","aggie spirit","bus","transit","aggie bus"] },
-      { points:800, q:"The academic calendar’s big rivalry week nickname (two words).", a:["beat week","beat the hell outta","beat the hell outta week"] },
+      { points:800, q:"The academic calendar's big rivalry week nickname (two words).", a:["beat week","beat the hell outta","beat the hell outta week"] },
       { points:1000,q:"Organization that coordinates many game-day traditions (abbr. ok).", a:["tamus","texas a&m university system","traditions council","aggie traditions council"] },
     ]
   },
 ];
+
+
+// Track the currently selected cell
+let currentCell = null;
+let currentAnswers = [];
+
+// Get input and button elements
+const answerInput = document.getElementById('answer-input');
+const submitButton = document.getElementById('submit-answer');
+
+// Add click event to all cells
+document.querySelectorAll('.cell').forEach(cell => {
+    cell.addEventListener('click', function() {
+        // Only flip if not already flipped
+        if (!this.classList.contains('flipped')) {
+            // If there's a previous cell that wasn't answered, flip it back
+            if (currentCell && currentCell !== this) {
+                currentCell.classList.remove('flipped');
+            }
+            
+            this.classList.add('flipped');
+            currentCell = this;
+            
+            // ✅ Support multiple comma-separated answers
+            currentAnswers = this.getAttribute('data-answer')
+                .split(',')
+                .map(a => a.trim().toLowerCase());
+        }
+    });
+});
+
+// Function to check answer
+function checkAnswer() {
+    if (!currentCell || currentAnswers.length === 0) {
+        return; // No cell selected
+    }
+    
+    const userAnswer = answerInput.value.trim().toLowerCase();
+    
+    if (userAnswer === "") {
+        alert("Please enter an answer!");
+        return;
+    }
+    
+    // ✅ Check if the user's answer matches any of the valid ones
+    if (currentAnswers.includes(userAnswer)) {
+        alert("Correct! 🎉");
+        // You can add score logic here
+    } else {
+        alert(`Wrong! The correct answers were: ${currentAnswers.join(', ')}`);
+    }
+    
+    // Clear input and reset current cell
+    answerInput.value = "";
+    currentCell = null;
+    currentAnswers = [];
+}
+
+// Submit button click event
+submitButton.addEventListener('click', checkAnswer);
+
+// Enter key press event
+answerInput.addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+        checkAnswer();
+    }
+});

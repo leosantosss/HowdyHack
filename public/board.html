@@ -12,7 +12,7 @@
 <body>
     <header class="topbar">
         <h2><span><a href="index.html">Texas A&M Jeopardy </a></span></h2>
-        <img src ="a&m.png" width = 40 height = 40>
+        <img src="a&m.png" width=40 height=40>
         <nav>
             <ul>
                 <li><a href="howtoplay.html">How to Play?</a></li>
@@ -23,7 +23,7 @@
     </header>
     <div class="middle">
         <div class="score">
-            <h1>Score:</h1>
+            <h1>Score:<span id="score-display">0</span></h1>
         </div>
         <div class="board">
 
@@ -78,7 +78,8 @@
             <div class="cell" data-answer="silver taps,silvertaps">
                 <div class="cell-inner">
                     <div class="cell-front">$400</div>
-                    <div class="cell-back">The solemn campus ceremony honoring recently fallen students, held the first Tuesday of the month.</div>
+                    <div class="cell-back">The solemn campus ceremony honoring recently fallen students, held the first
+                        Tuesday of the month.</div>
                 </div>
             </div>
             <div class="cell" data-answer="century tree,the century tree">
@@ -99,7 +100,8 @@
                     <div class="cell-back">The live canine mascot of Texas A&M.</div>
                 </div>
             </div>
-            <div class="cell" data-answer="agricultural and mechanical,agriculture and mechanical,agricultural & mechanical">
+            <div class="cell"
+                data-answer="agricultural and mechanical,agriculture and mechanical,agricultural & mechanical">
                 <div class="cell-inner">
                     <div class="cell-front">$400</div>
                     <div class="cell-back">The 'A' and 'M' originally stood for this.</div>
@@ -179,7 +181,8 @@
             <div class="cell" data-answer="foale,mike foale,michael foale,shannon walker,walker">
                 <div class="cell-inner">
                     <div class="cell-front">$800</div>
-                    <div class="cell-back">Aggie astronaut who commanded the International Space Station (last name ok).</div>
+                    <div class="cell-back">Aggie astronaut who commanded the International Space Station (last name ok).
+                    </div>
                 </div>
             </div>
             <div class="cell" data-answer="beat week,beat the hell outta,beat the hell outta week">
@@ -196,7 +199,8 @@
                     <div class="cell-back">The late-night pep rally tradition held before big games.</div>
                 </div>
             </div>
-            <div class="cell" data-answer="reveille's dorm,reveille dorm,reveille's residence,reveille residence,reveille">
+            <div class="cell"
+                data-answer="reveille's dorm,reveille dorm,reveille's residence,reveille residence,reveille">
                 <div class="cell-inner">
                     <div class="cell-front">$1000</div>
                     <div class="cell-back">This collie's residence is guarded by the Corps' Mascot Company.</div>
@@ -205,10 +209,12 @@
             <div class="cell" data-answer="corps of cadets,the corps of cadets,corps">
                 <div class="cell-inner">
                     <div class="cell-front">$1000</div>
-                    <div class="cell-back">Group that preserves many traditions through disciplined leadership training.</div>
+                    <div class="cell-back">Group that preserves many traditions through disciplined leadership training.
+                    </div>
                 </div>
             </div>
-            <div class="cell" data-answer="fightin' texas aggie band,fightin texas aggie band,texas aggie band,aggie band">
+            <div class="cell"
+                data-answer="fightin' texas aggie band,fightin texas aggie band,texas aggie band,aggie band">
                 <div class="cell-inner">
                     <div class="cell-front">$1000</div>
                     <div class="cell-back">This drum line's booming cadence fires up Kyle Field.</div>
@@ -220,7 +226,8 @@
                     <div class="cell-back">Legendary football training camp story tied to Bear Bryant.</div>
                 </div>
             </div>
-            <div class="cell" data-answer="tamus,texas a&m university system,traditions council,aggie traditions council">
+            <div class="cell"
+                data-answer="tamus,texas a&m university system,traditions council,aggie traditions council">
                 <div class="cell-inner">
                     <div class="cell-front">$1000</div>
                     <div class="cell-back">Organization that coordinates many game-day traditions (abbr. ok).</div>
@@ -233,7 +240,16 @@
         </div>
     </div>
 
-
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal" id="modal">
+            <div class="modal-icon" id="modal-icon"></div>
+            <h2 id="modal-title"></h2>
+            <div class="modal-points" id="modal-points"></div>
+            <p id="modal-message"></p>
+            <div class="correct-answers" id="correct-answers-section" style="display: none;"></div>
+            <button class="modal-button" id="modal-close">Continue</button>
+        </div>
+    </div>
     <script src="script.js"></script>
 </body>
 

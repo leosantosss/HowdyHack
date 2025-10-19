@@ -9,102 +9,39 @@ const firebaseConfig = {
   measurementId: "G-VMJ3PLNDMF"
 };
 
-// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-const CATEGORIES = [
-  {
-    name: "Aggie Traditions",
-    clues: [
-      { points: 200, q: "Thumbs-up hand sign used by Aggies.", a: ["gig 'em", "gig em", "gig'em", "gigem", "gigem!", "gig 'em!"] },
-      { points: 400, q: "The solemn campus ceremony honoring recently fallen students, held the first Tuesday of the month.", a: ["silver taps", "silvertaps"] },
-      { points: 600, q: "Annual worldwide remembrance where Aggies answer 'Here' for the fallen.", a: ["aggie muster", "muster"] },
-      { points: 800, q: "This coveted piece of jewelry symbolizes Aggie achievement and unity.", a: ["aggie ring", "the aggie ring", "ring"] },
-      { points: 1000, q: "The late-night pep rally tradition held before big games.", a: ["midnight yell", "midnight yell practice", "yell practice"] },
-    ]
-  },
-  {
-    name: "Campus Landmarks",
-    clues: [
-      { points: 200, q: "Home stadium of Aggie Football.", a: ["kyle field"] },
-      { points: 400, q: "Historic tree near the Academic Building known for proposals.", a: ["century tree", "the century tree"] },
-      { points: 600, q: "Memorial site dedicated to the 1999 tragedy.", a: ["bonfire memorial", "aggie bonfire memorial", "bonfire"] },
-      { points: 800, q: "This building's dome is an iconic symbol of campus.", a: ["academic building", "the academic building"] },
-      { points: 1000, q: "This collie's residence is guarded by the Corps' Mascot Company.", a: ["reveille's dorm", "reveille dorm", "reveille's residence", "reveille residence", "reveille"] },
-    ]
-  },
-  {
-    name: "Yells & Lingo",
-    clues: [
-      { points: 200, q: "Official campus greeting.", a: ["howdy"] },
-      { points: 400, q: "Exclamation traditionally reserved for juniors and seniors.", a: ["whoop", "whoop!"] },
-      { points: 600, q: "Students who lead yells at games (not cheerleaders).", a: ["yell leaders", "yell leader"] },
-      { points: 800, q: "Collective name Aggies use for the student body at games.", a: ["12th man", "the 12th man", "twelfth man"] },
-      { points: 1000, q: "Group that preserves many traditions through disciplined leadership training.", a: ["corps of cadets", "the corps of cadets", "corps"] },
-    ]
-  },
-  {
-    name: "Sports & Spirit",
-    clues: [
-      { points: 200, q: "Conference Texas A&M currently competes in for most sports.", a: ["sec", "southeastern conference"] },
-      { points: 400, q: "The live canine mascot of Texas A&M.", a: ["reveille"] },
-      { points: 600, q: "Mass maroon-shirt crowd initiative first launched in 1998.", a: ["maroon out", "maroon-out", "maroonout"] },
-      { points: 800, q: "Nickname for the dedicated standing student section at football games.", a: ["12th man", "the 12th man", "twelfth man"] },
-      { points: 1000, q: "This drum line's booming cadence fires up Kyle Field.", a: ["fightin' texas aggie band", "fightin texas aggie band", "texas aggie band", "aggie band"] },
-    ]
-  },
-  {
-    name: "History & Alumni",
-    clues: [
-      { points: 200, q: "Year Texas A&M was founded (within 1 year).", a: ["1876", "1875", "1877"], type: "numeric" },
-      { points: 400, q: "The 'A' and 'M' originally stood for this.", a: ["agricultural and mechanical", "agriculture and mechanical", "agricultural & mechanical"] },
-      { points: 600, q: "This Aggie became the 41st U.S. President.", a: ["george h. w. bush", "george bush sr", "george herbert walker bush", "george hw bush"] },
-      { points: 800, q: "Aggie astronaut who commanded the International Space Station (last name ok).", a: ["foale", "mike foale", "michael foale", "shannon walker", "walker"] },
-      { points: 1000, q: "Legendary football training camp story tied to Bear Bryant.", a: ["junction boys", "the junction boys"] },
-    ]
-  },
-  {
-    name: "College Station Life",
-    clues: [
-      { points: 200, q: "City that, with Bryan, forms the metro area Aggies call home.", a: ["college station"] },
-      { points: 400, q: "Major on-campus event where freshmen learn Aggie spirit before classes.", a: ["fish camp", "fishcamp"] },
-      { points: 600, q: "On-campus transportation system used by many students.", a: ["aggie spirit bus", "aggie spirit", "bus", "transit", "aggie bus"] },
-      { points: 800, q: "The academic calendar's big rivalry week nickname (two words).", a: ["beat week", "beat the hell outta", "beat the hell outta week"] },
-      { points: 1000, q: "Organization that coordinates many game-day traditions (abbr. ok).", a: ["tamus", "texas a&m university system", "traditions council", "aggie traditions council"] },
-    ]
-  },
-];
-
-// Background music setup
+// Background Music Setup
 const bgMusic = new Audio('jeopardy_theme.mp3');
 bgMusic.loop = true;
-bgMusic.volume = 0.6;
+bgMusic.volume = 0.3;
 bgMusic.preload = 'auto';
 
-let _jeopardyMusicStarted = false;
+let musicStarted = false;
 
 function startMusicIfNeeded() {
-  if (_jeopardyMusicStarted) return;
-  if (localStorage.getItem('soundEnabled') === 'true') {
-    _jeopardyMusicStarted = true;
-    bgMusic.play().catch(() => {});
+  if (musicStarted) return;
+  const soundEnabled = localStorage.getItem('soundEnabled');
+  if (soundEnabled === 'true') {
+    musicStarted = true;
+    bgMusic.play().catch(err => {
+      console.log('Music autoplay blocked by browser:', err);
+    });
   }
 }
 
 function stopMusic() {
-  if (!_jeopardyMusicStarted) return;
+  if (!musicStarted) return;
   bgMusic.pause();
   bgMusic.currentTime = 0;
-  _jeopardyMusicStarted = false;
+  musicStarted = false;
 }
 
-// Initialize game state
 let score = 0;
 let currentCell = null;
 let currentAnswers = [];
 let currentPoints = 0;
-
 let timerInterval = null;
 let timeRemaining = 15;
 let totalTime = 15;
@@ -122,9 +59,13 @@ const answerInput = document.getElementById('answer-input');
 const submitButton = document.getElementById('submit-answer');
 const scoreDisplay = document.getElementById('score-display');
 
+// Cell click handler
 document.querySelectorAll('.cell').forEach(cell => {
   cell.addEventListener('click', function () {
     if (!this.classList.contains('flipped') && !this.classList.contains('answered')) {
+      // Start music on first click
+      startMusicIfNeeded();
+      
       if (currentCell && currentCell !== this) {
         currentCell.classList.remove('flipped');
       }
@@ -177,6 +118,8 @@ function startTimer() {
       clearInterval(timerInterval);
       timeUp();
     }
+  }, 1000);
+}
 
 function stopTimer() {
   if (timerInterval) {
@@ -191,13 +134,14 @@ function timeUp() {
     showModal(false, currentPoints, currentAnswers);
 
     currentCell.classList.add('answered');
-    document.getElementById('answer-input').value = "";
+    answerInput.value = "";
     currentCell = null;
     currentAnswers = [];
     currentPoints = 0;
 
     checkGameOver();
   }
+}
 
 function checkAnswer() {
   if (!currentCell || currentAnswers.length === 0) {
@@ -208,7 +152,9 @@ function checkAnswer() {
 
   const userAnswer = answerInput.value.trim().toLowerCase();
 
-    modalOverlay.classList.add('show');
+  if (userAnswer === "") {
+    showModal(false, 0, ['Please enter an answer!']);
+    return;
   }
 
   if (currentAnswers.includes(userAnswer)) {
@@ -231,97 +177,92 @@ function checkAnswer() {
 function showModal(isCorrect, points, correctAnswersList = []) {
   modal.className = 'modal ' + (isCorrect ? 'correct' : 'wrong');
 
-        // Get the point value from the cell
-        const pointText = this.querySelector('.cell-front').textContent;
-        currentPoints = parseInt(pointText.replace('$', ''));
+  if (isCorrect) {
+    modalIcon.textContent = '🎉';
+    modalTitle.textContent = 'CORRECT!';
+    modalPoints.textContent = '+$' + points;
+    modalMessage.textContent = 'Great job, Aggie!';
+    correctAnswersSection.style.display = 'none';
+  } else {
+    modalIcon.textContent = '❌';
+    modalTitle.textContent = 'INCORRECT';
+    modalPoints.textContent = '-$' + points;
+    modalMessage.textContent = 'Better luck next time!';
+    correctAnswersSection.innerHTML = '<strong>Correct answers:</strong><br>' +
+      correctAnswersList.map(a => a.charAt(0).toUpperCase() + a.slice(1)).join(', ');
+    correctAnswersSection.style.display = 'block';
+  }
 
-        // Support multiple comma-separated answers
-        currentAnswers = this.getAttribute('data-answer')
-          .split(',')
-          .map(a => a.trim().toLowerCase());
+  modalOverlay.classList.add('show');
+}
 
-        // Start the timer with penalty
-        window.beginQuestionTimer(currentPoints);
-      }
-    });
-  });
+modalClose.addEventListener('click', function () {
+  modalOverlay.classList.remove('show');
+});
 
-  // Modal close button
-  document.getElementById('modal-close').addEventListener('click', function () {
-    document.getElementById('modal-overlay').classList.remove('show');
-  });
+modalOverlay.addEventListener('click', function (e) {
+  if (e.target === modalOverlay) {
+    modalOverlay.classList.remove('show');
+  }
+});
 
 function checkGameOver() {
   const allCells = document.querySelectorAll('.cell');
   const answeredCells = document.querySelectorAll('.cell.answered');
 
   if (allCells.length === answeredCells.length) {
+    stopMusic(); // Stop music when game ends
     setTimeout(() => {
       saveScoreToLeaderboard();
     }, 1000);
   }
 }
 
-// ... (rest of your code before saveScoreToLeaderboard)
-
-
 async function saveScoreToLeaderboard() {
   console.log('=== START SAVE ===');
   console.log('Score value:', score);
 
   let playerName = prompt('What is your name, Aggie?', 'Anonymous Aggie');
-  
+
   if (playerName === null || playerName.trim() === '') {
     playerName = 'Anonymous Aggie';
   } else {
     playerName = playerName.trim();
   }
-  
+
   console.log('Player name:', playerName);
   console.log('Saving score:', playerName, score);
 
-  // 1. CHECK ADDED: Ensure Firebase connection is ready
   if (!db || typeof db.collection !== 'function') {
-      console.error('Firebase Firestore not initialized or available.');
-      alert('Error: The database connection is not ready. Check Firebase setup.');
-      return;
+    console.error('Firebase Firestore not initialized');
+    alert('Error: Database connection failed');
+    return;
   }
-  
-  // The old 'if (score <= 0) { ... }' check has been REMOVED here.
-  
+
   try {
     const docData = {
       name: playerName,
-      score: score, // This will now save negative, zero, or positive scores
+      score: score,
       timestamp: new Date()
     };
-        
-    console.log('Step 3: Adding to firestore...');
-    const docRef = await db.collection('leaderboard').add(docData);
-        
-    console.log('Step 4: SUCCESS - Doc ID:', docRef.id);
-    
-    // 2. Alert and Redirection Logic
-    const message = `Game over, ${playerName}! Your final score of ${score} has been recorded to the leaderboard.`;
-    alert(message);
-    
-    console.log('Step 5: Redirecting...');
-    setTimeout(() => {
-        window.location.href = 'leaderboard.html';
-    }, 0); 
 
+    console.log('Adding to firestore:', docData);
+    const docRef = await db.collection('leaderboard').add(docData);
+
+    console.log('SUCCESS - Doc ID:', docRef.id);
+    alert(`Great game, ${playerName}! Your score of $${score} has been saved!`);
+
+    window.location.href = 'leaderboard.html';
   } catch (error) {
-    console.error('=== ERROR DURING SAVE ===');
-    console.error('Error object:', error);
-    console.error('Error message:', error.message);
-    alert(`Error saving score: ${error.message}. Please check console for details.`);
+    console.error('ERROR:', error);
+    alert(`Error saving score: ${error.message}`);
   }
 }
 
-// ... (rest of your code after saveScoreToLeaderboard)
-
+// Submit button click
 submitButton.addEventListener('click', checkAnswer);
 
+// Enter key
 answerInput.addEventListener('keypress', function (event) {
   if (event.key === 'Enter') {
     checkAnswer();

@@ -310,6 +310,11 @@ body {
   box-shadow:0 4px 20px var(--score-shadow);
   text-align:center;
 }
+#leaderboard-body .score {
+  background: none !important;
+  color: var(--text) !important;
+  box-shadow: none !important;
+}
 .score h1{ font-size:2rem; }
 
 .answer-container{
@@ -367,7 +372,7 @@ body.light #answer-input::placeholder{ color:rgba(0,0,0,0.45); }
   background:var(--timer-bar);
   transform-origin:left center;
   transform:scaleX(1);
-  transition: transform .2s linear, background .15s ease, box-shadow .15s ease;
+  transition: transform .2s linear, .15s ease, box-shadow .15s ease;
 }
 .timer-text{
   position:absolute; inset:0;
@@ -485,4 +490,9 @@ main > h1 {
 /* Force black in light mode (if you want pure black) */
 body.light main > h1 {
   color: #000; /* or stick with var(--text) if you prefer that tone */
+}
+
+
+.top_10{
+  font-size: 4rem;
 }

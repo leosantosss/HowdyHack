@@ -11,8 +11,7 @@ body {
     justify-content: space-between;
     align-items: center;
     color: rgb(255, 255, 255);
-    border-bottom: 3px solid black;
-    background-color: rgba(139, 0, 0, 0.8);
+    background: linear-gradient(to top, #3b0101, #5f0909, #952323, #a85757);
     font-size: 2.25rem;
     padding: 0.5rem 1rem;
     position: relative;
@@ -115,7 +114,7 @@ body {
     background: #3b0101;
     margin: 2rem auto;
     padding: 1rem;
-    border: 2px solid #000000;
+    border: 2px solid #611e1e;
     border-radius: 10px;
     width: 95%;
     z-index: 1;
@@ -164,7 +163,7 @@ body {
 .cell-front {
     /* keep your maroon tile */
     background: #760505;
-    color: white;
+    color: rgb(230, 177, 55);
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
     font-size: 3rem;
 }
@@ -184,7 +183,7 @@ body {
 }
 
 .cell-back {
-    background: #b42222;
+    background: linear-gradient(to bottom,#860505,#3b0c0c);
     color: #ffffff;
     transform: rotateY(180deg);
     font-size: 1.2rem;
@@ -208,11 +207,11 @@ body {
 
 .score {
     padding: 10px 20px;
-    background: rgba(0, 0, 0, 0.4);
+    background: linear-gradient(to top, #2d0000, #490404, #911c1c);
     /* semi-transparent black */
     border-radius: 15px;
     color: #ffffff;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(0, 0, 0, 0.2);
     /* subtle edge */
 
     /* Blur effect */
@@ -222,7 +221,7 @@ body {
     /* Safari support */
 
     /* Optional shadow for depth */
-    box-shadow: 0 4px 20px #ffd700;
+    box-shadow: 0 4px 20px #ffffff;
 
 
     text-align: center;
@@ -295,4 +294,140 @@ body {
     to {
         background-position: 10000px 10000px;
     }
+}
+
+/* Modal Overlay */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-overlay.show {
+    display: flex;
+}
+
+/* Modal Box */
+.modal {
+    background: linear-gradient(135deg, #500000 0%, #800000 100%);
+    border: 3px solid #FFD700;
+    border-radius: 15px;
+    padding: 40px;
+    max-width: 500px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    animation: slideIn 0.3s ease;
+    color: white;
+}
+
+/* Correct Answer Modal */
+.modal.correct {
+    background: linear-gradient(135deg, #1a5f1a 0%, #2d8f2d 100%);
+    border-color: #90EE90;
+}
+
+/* Wrong Answer Modal */
+.modal.wrong {
+    background: linear-gradient(135deg, #5f1a1a 0%, #8f2d2d 100%);
+    border-color: #FF6B6B;
+}
+
+.modal-icon {
+    font-size: 80px;
+    margin-bottom: 20px;
+    animation: bounce 0.5s ease;
+}
+
+.modal h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    margin: 0 0 15px 0;
+    letter-spacing: 2px;
+}
+
+.modal-points {
+    font-size: 48px;
+    font-weight: bold;
+    color: #FFD700;
+    margin: 15px 0;
+    font-family: 'Bebas Neue', sans-serif;
+}
+
+.modal p {
+    font-size: 18px;
+    margin: 10px 0;
+    line-height: 1.6;
+}
+
+.modal-button {
+    margin-top: 25px;
+    padding: 12px 40px;
+    font-size: 18px;
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 1px;
+    background-color: #FFD700;
+    color: #500000;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+}
+
+.modal-button:hover {
+    background-color: #FFC700;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 215, 0, 0.5);
+}
+
+.correct-answers {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 15px;
+    font-style: italic;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes bounce {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+.cell.answered {
+    pointer-events: none;
+    opacity: 0.2;
+}
+
+.cell.answered .cell-inner {
+    transform: rotateY(180deg);
+}
+
+.cell.answered .cell-back {
+    color: #707070;
+    text-decoration: line-through;
 }

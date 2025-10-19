@@ -62,14 +62,27 @@ const CATEGORIES = [
   },
 ];
 
+// Initialize score
+let score = 0;
 
 // Track the currently selected cell
 let currentCell = null;
 let currentAnswers = [];
+let currentPoints = 0;
+
+const modalOverlay = document.getElementById('modal-overlay');
+const modal = document.getElementById('modal');
+const modalIcon = document.getElementById('modal-icon');
+const modalTitle = document.getElementById('modal-title');
+const modalPoints = document.getElementById('modal-points');
+const modalMessage = document.getElementById('modal-message');
+const correctAnswersSection = document.getElementById('correct-answers-section');
+const modalClose = document.getElementById('modal-close')
 
 // Get input and button elements
 const answerInput = document.getElementById('answer-input');
 const submitButton = document.getElementById('submit-answer');
+const scoreDisplay = document.getElementById('score-display');
 
 // Add click event to all cells
 document.querySelectorAll('.cell').forEach(cell => {
@@ -84,13 +97,23 @@ document.querySelectorAll('.cell').forEach(cell => {
             this.classList.add('flipped');
             currentCell = this;
             
-            // ✅ Support multiple comma-separated answers
+            // Get the point value from the cell
+            const pointText = this.querySelector('.cell-front').textContent;
+            currentPoints = parseInt(pointText.replace('$', ''));
+            
+            // Support multiple comma-separated answers
             currentAnswers = this.getAttribute('data-answer')
                 .split(',')
                 .map(a => a.trim().toLowerCase());
         }
     });
 });
+
+// Function to update score display
+function updateScore(points) {
+    score += points;
+    scoreDisplay.textContent = score;
+}
 
 // Function to check answer
 function checkAnswer() {
@@ -101,23 +124,58 @@ function checkAnswer() {
     const userAnswer = answerInput.value.trim().toLowerCase();
     
     if (userAnswer === "") {
-        alert("Please enter an answer!");
+        showModal(false, 0, ['Please enter an answer!']);
         return;
     }
     
-    // ✅ Check if the user's answer matches any of the valid ones
+    // Check if the user's answer matches any of the valid ones
     if (currentAnswers.includes(userAnswer)) {
-        alert("Correct! 🎉");
-        // You can add score logic here
+        updateScore(currentPoints);
+        showModal(true, currentPoints);
     } else {
-        alert(`Wrong! The correct answers were: ${currentAnswers.join(', ')}`);
+        updateScore(-currentPoints)
+        showModal(false, currentPoints, currentAnswers);
     }
+
+    currentCell.classList.add('answered');
     
     // Clear input and reset current cell
     answerInput.value = "";
     currentCell = null;
     currentAnswers = [];
+    currentPoints = 0;
 }
+function showModal(isCorrect, points, correctAnswersList = []) {
+    modal.className = 'modal ' + (isCorrect ? 'correct' : 'wrong');
+    
+    if (isCorrect) {
+        modalIcon.textContent = '🎉';
+        modalTitle.textContent = 'CORRECT!';
+        modalPoints.textContent = '+$' + points;
+        modalMessage.textContent = 'Great job, Aggie!';
+        correctAnswersSection.style.display = 'none';
+    } else {
+        modalIcon.textContent = '❌';
+        modalTitle.textContent = 'INCORRECT';
+        modalPoints.textContent = '-$'+ points;
+        modalMessage.textContent = 'Better luck next time!';
+        correctAnswersSection.innerHTML = '<strong>Correct answers:</strong><br>' + 
+            correctAnswersList.map(a => a.charAt(0).toUpperCase() + a.slice(1)).join(', ');
+        correctAnswersSection.style.display = 'block';
+    }
+    
+    modalOverlay.classList.add('show');
+}
+
+modalClose.addEventListener('click', function() {
+    modalOverlay.classList.remove('show');
+});
+
+modalOverlay.addEventListener('click', function(e) {
+    if (e.target === modalOverlay) {
+        modalOverlay.classList.remove('show');
+    }
+});
 
 // Submit button click event
 submitButton.addEventListener('click', checkAnswer);

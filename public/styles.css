@@ -492,7 +492,6 @@ body.light main > h1 {
   color: #000; /* or stick with var(--text) if you prefer that tone */
 }
 
-
 .top_10{
   font-size: 4rem;
 }

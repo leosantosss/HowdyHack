@@ -5,8 +5,21 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Leaderboard | Texas A&M Jeopardy</title>
+
+  <!-- Load saved theme BEFORE paint -->
+  <script>
+    (function () {
+      const t = localStorage.getItem('theme') || 'dark';
+      if (t === 'light') {
+        document.documentElement.classList.add('light');
+        window.addEventListener('DOMContentLoaded', () => document.body.classList.add('light'), { once: true });
+      }
+    })();
+  </script>
+
   <link rel="stylesheet" href="styles.css" />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+
   <style>
     body {
       background-color: #2d0a0a;
@@ -14,8 +27,67 @@
       font-family: 'Bebas Neue', sans-serif;
       margin: 0;
       padding: 0;
+      transition: background-color 0.3s, color 0.3s;
     }
 
+    /* Light Mode Background & Text */
+    body.light {
+      background-color: #ffffff;
+      color: #1e0a0a;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: rgb(255, 255, 255);
+      border-bottom: 3px solid black;
+      background-color: rgba(139, 0, 0, 0.8);
+      font-size: 2.25rem;
+      padding: 0.5rem 1rem;
+    }
+
+    .topbar h2 a {
+      color: #fdf7e3;
+      text-decoration: none;
+      font-size: 2rem;
+    }
+
+    .topbar ul {
+      list-style: none;
+      display: flex;
+      gap: 25px;
+      margin: 0;
+      padding: 0;
+    }
+
+    .topbar a {
+      color: #fdf7e3;
+      text-decoration: none;
+      font-size: 1.6rem;
+      transition: color 0.2s ease;
+    }
+
+    .topbar a:hover {
+      color: #caa052;
+    }
+
+    .main {
+      margin-top: 50px;
+    }
+
+    /* Main Title */
+    .main h1 {
+      text-align: center;
+      color: #fdf7e3;
+      font-size: 3rem;
+    }
+
+    body.light .main h1 {
+      color: #000000; /* black in light mode */
+    }
+
+    /* Leaderboard Card */
     .leaderboard-card {
       width: min(90vw, 800px);
       margin: 2rem auto;
@@ -35,12 +107,20 @@
     td {
       padding: 12px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      color: #fdf7e3;
     }
 
     th {
       text-align: left;
       font-weight: bold;
       border-bottom: 2px solid #caa052;
+      font-size: 1.3rem;
+    }
+
+    /* Make table header text black in light mode */
+    body.light th,
+    body.light td {
+      color: #ffffff;
     }
 
     .rank {

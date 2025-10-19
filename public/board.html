@@ -1,260 +1,253 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A&M Jeopardy</title>
-    <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+  <!-- light them -->
+  <script>
+    (function() {
+      const t = localStorage.getItem('theme') || 'dark';
+      if (t === 'light') {
+        document.documentElement.classList.add('light');
+        
+        window.addEventListener('DOMContentLoaded', () => document.body.classList.add('light'), { once: true });
+      }
+    })();
+  </script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>A&M Jeopardy</title>
+
+  <!-- global theme-aware styles -->
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet" />
 </head>
 
 <body>
-    <header class="topbar">
-        <h2><span><a href="index.html">Texas A&M Jeopardy </a></span></h2>
-        <img src="a&m.png" width=40 height=40>
-        <nav>
-            <ul>
-                <li><a href="howtoplay.html">How to Play?</a></li>
-                <li><a href="leaderboard.html">Leaderboard</a></li>
-                <li><a href="settings.html">Settings</a></li>
-            </ul>
-        </nav>
-    </header>
-    <div class="middle">
-        <div class="score">
-            <h1>Score:<span id="score-display">0</span></h1>
-        </div>
-        <!-- Timer Bar (reads length from settings; controlled by timer.js/script.js) -->
-        <div class="timer" id="timer">
-            <div class="timer-bar" id="timer-bar"></div>
-            <span class="timer-text"><span id="time-left">15</span>s</span>
-        </div>
-        <div class="board">
+  <header class="topbar">
+    <h2><span><a href="index.html">Texas A&M Jeopardy</a></span></h2>
+    <img src="a&amp;m.png" width="40" height="40" alt="Texas A&amp;M logo">
+    <nav>
+      <ul>
+        <li><a href="howtoplay.html">How to Play?</a></li>
+        <li><a href="leaderboard.html">Leaderboard</a></li>
+        <li><a href="settings.html">Settings</a></li>
+      </ul>
+    </nav>
+  </header>
 
-
-
-            <div class="categories">Aggie Traditions</div>
-            <div class="categories">Campus Landmarks</div>
-            <div class="categories">Yells & Lingo</div>
-            <div class="categories">Sports & Spirit</div>
-            <div class="categories">History & Alumni</div>
-            <div class="categories">College Station Life</div>
-
-
-
-            <!-- Example row with 6 tiles -->
-            <div class="cell" data-answer="gig 'em,gig em,gig'em,gigem,gigem!,gig 'em!">
-                <div class="cell-inner">
-                    <div class="cell-front">$200</div>
-                    <div class="cell-back">What is the thumbs-up hand sign used by Aggies?</div>
-                </div>
-            </div>
-            <div class="cell" data-answer="kyle field">
-                <div class="cell-inner">
-                    <div class="cell-front">$200</div>
-                    <div class="cell-back">Home stadium of Aggie Football.</div>
-                </div>
-            </div>
-            <div class="cell" data-answer="howdy">
-                <div class="cell-inner">
-                    <div class="cell-front">$200</div>
-                    <div class="cell-back">Official campus greeting.</div>
-                </div>
-            </div>
-            <div class="cell" data-answer="sec,southeastern conference,south eastern conference">
-                <div class="cell-inner">
-                    <div class="cell-front">$200</div>
-                    <div class="cell-back">Conference Texas A&M currently competes in for most sports.</div>
-                </div>
-            </div>
-            <div class="cell" data-answer="1876,1875,1877">
-                <div class="cell-inner">
-                    <div class="cell-front">$200</div>
-                    <div class="cell-back">Year Texas A&M was founded (within 1 year).</div>
-                </div>
-            </div>
-            <div class="cell" data-answer="college station">
-                <div class="cell-inner">
-                    <div class="cell-front">$200</div>
-                    <div class="cell-back">City that, with Bryan, forms the metro area Aggies call home.</div>
-                </div>
-            </div>
-            <!-- 400 -->
-            <div class="cell" data-answer="silver taps,silvertaps">
-                <div class="cell-inner">
-                    <div class="cell-front">$400</div>
-                    <div class="cell-back">The solemn campus ceremony honoring recently fallen students, held the first
-                        Tuesday of the month.</div>
-                </div>
-            </div>
-            <div class="cell" data-answer="century tree,the century tree">
-                <div class="cell-inner">
-                    <div class="cell-front">$400</div>
-                    <div class="cell-back">Historic tree near the Academic Building known for proposals.</div>
-                </div>
-            </div>
-            <div class="cell" data-answer="whoop,whoop!">
-                <div class="cell-inner">
-                    <div class="cell-front">$400</div>
-                    <div class="cell-back">Exclamation traditionally reserved for juniors and seniors.</div>
-                </div>
-            </div>
-            <div class="cell" data-answer="reveille">
-                <div class="cell-inner">
-                    <div class="cell-front">$400</div>
-                    <div class="cell-back">The live canine mascot of Texas A&M.</div>
-                </div>
-            </div>
-            <div class="cell"
-                data-answer="agricultural and mechanical,agriculture and mechanical,agricultural & mechanical">
-                <div class="cell-inner">
-                    <div class="cell-front">$400</div>
-                    <div class="cell-back">The 'A' and 'M' originally stood for this.</div>
-                </div>
-            </div>
-            <div class="cell" data-answer="fish camp,fishcamp">
-                <div class="cell-inner">
-                    <div class="cell-front">$400</div>
-                    <div class="cell-back">Major on-campus event where freshmen learn Aggie spirit before classes.</div>
-                </div>
-            </div>
-
-            <!-- 600 -->
-            <div class="cell" data-answer="aggie muster,muster">
-                <div class="cell-inner">
-                    <div class="cell-front">$600</div>
-                    <div class="cell-back">Annual worldwide remembrance where Aggies answer 'Here' for the fallen.</div>
-                </div>
-            </div>
-            <div class="cell" data-answer="bonfire memorial,aggie bonfire memorial,bonfire">
-                <div class="cell-inner">
-                    <div class="cell-front">$600</div>
-                    <div class="cell-back">Memorial site dedicated to the 1999 tragedy.</div>
-                </div>
-            </div>
-            <div class="cell" data-answer="yell leaders,yell leader">
-                <div class="cell-inner">
-                    <div class="cell-front">$600</div>
-                    <div class="cell-back">Students who lead yells at games (not cheerleaders).</div>
-                </div>
-            </div>
-            <div class="cell" data-answer="maroon out,maroon-out,maroonout">
-                <div class="cell-inner">
-                    <div class="cell-front">$600</div>
-                    <div class="cell-back">Mass maroon-shirt crowd initiative first launched in 1998.</div>
-                </div>
-            </div>
-            <div class="cell" data-answer="george h. w. bush,george bush sr,george herbert walker bush,george hw bush">
-                <div class="cell-inner">
-                    <div class="cell-front">$600</div>
-                    <div class="cell-back">This Aggie became the 41st U.S. President.</div>
-                </div>
-            </div>
-            <div class="cell" data-answer="aggie spirit bus,aggie spirit,bus,transit,aggie bus">
-                <div class="cell-inner">
-                    <div class="cell-front">$600</div>
-                    <div class="cell-back">On-campus transportation system used by many students.</div>
-                </div>
-            </div>
-
-
-            <!-- 800 -->
-            <div class="cell" data-answer="aggie ring,the aggie ring,ring">
-                <div class="cell-inner">
-                    <div class="cell-front">$800</div>
-                    <div class="cell-back">This coveted piece of jewelry symbolizes Aggie achievement and unity.</div>
-                </div>
-            </div>
-            <div class="cell" data-answer="academic building,the academic building">
-                <div class="cell-inner">
-                    <div class="cell-front">$800</div>
-                    <div class="cell-back">This building's dome is an iconic symbol of campus.</div>
-                </div>
-            </div>
-            <div class="cell" data-answer="12th man,the 12th man,twelfth man">
-                <div class="cell-inner">
-                    <div class="cell-front">$800</div>
-                    <div class="cell-back">Collective name Aggies use for the student body at games.</div>
-                </div>
-            </div>
-            <div class="cell" data-answer="12th man,the 12th man,twelfth man">
-                <div class="cell-inner">
-                    <div class="cell-front">$800</div>
-                    <div class="cell-back">Nickname for the dedicated standing student section at football games.</div>
-                </div>
-            </div>
-            <div class="cell" data-answer="foale,mike foale,michael foale,shannon walker,walker">
-                <div class="cell-inner">
-                    <div class="cell-front">$800</div>
-                    <div class="cell-back">Aggie astronaut who commanded the International Space Station (last name ok).
-                    </div>
-                </div>
-            </div>
-            <div class="cell" data-answer="beat week,beat the hell outta,beat the hell outta week">
-                <div class="cell-inner">
-                    <div class="cell-front">$800</div>
-                    <div class="cell-back">The academic calendar's big rivalry week nickname (two words).</div>
-                </div>
-            </div>
-
-            <!-- 1000 -->
-            <div class="cell" data-answer="midnight yell,midnight yell practice,yell practice">
-                <div class="cell-inner">
-                    <div class="cell-front">$1000</div>
-                    <div class="cell-back">The late-night pep rally tradition held before big games.</div>
-                </div>
-            </div>
-            <div class="cell"
-                data-answer="reveille's dorm,reveille dorm,reveille's residence,reveille residence,reveille">
-                <div class="cell-inner">
-                    <div class="cell-front">$1000</div>
-                    <div class="cell-back">This collie's residence is guarded by the Corps' Mascot Company.</div>
-                </div>
-            </div>
-            <div class="cell" data-answer="corps of cadets,the corps of cadets,corps">
-                <div class="cell-inner">
-                    <div class="cell-front">$1000</div>
-                    <div class="cell-back">Group that preserves many traditions through disciplined leadership training.
-                    </div>
-                </div>
-            </div>
-            <div class="cell"
-                data-answer="fightin' texas aggie band,fightin texas aggie band,texas aggie band,aggie band">
-                <div class="cell-inner">
-                    <div class="cell-front">$1000</div>
-                    <div class="cell-back">This drum line's booming cadence fires up Kyle Field.</div>
-                </div>
-            </div>
-            <div class="cell" data-answer="junction boys,the junction boys">
-                <div class="cell-inner">
-                    <div class="cell-front">$1000</div>
-                    <div class="cell-back">Legendary football training camp story tied to Bear Bryant.</div>
-                </div>
-            </div>
-            <div class="cell"
-                data-answer="tamus,texas a&m university system,traditions council,aggie traditions council">
-                <div class="cell-inner">
-                    <div class="cell-front">$1000</div>
-                    <div class="cell-back">Organization that coordinates many game-day traditions (abbr. ok).</div>
-                </div>
-            </div>
-        </div>
-        <div class="answer-container">
-            <input type="text" id="answer-input" placeholder="Type your answer...">
-            <button id="submit-answer">Submit</button>
-        </div>
+  <div class="middle">
+    <div class="score">
+      <h1>Score: <span id="score-display">0</span></h1>
     </div>
 
-    <div class="modal-overlay" id="modal-overlay">
-        <div class="modal" id="modal">
-            <div class="modal-icon" id="modal-icon"></div>
-            <h2 id="modal-title"></h2>
-            <div class="modal-points" id="modal-points"></div>
-            <p id="modal-message"></p>
-            <div class="correct-answers" id="correct-answers-section" style="display: none;"></div>
-            <button class="modal-button" id="modal-close">Continue</button>
+    <!-- Timer Bar reads length from settings; controlled by timer.js/script.js) -->
+    <div class="timer" id="timer">
+      <div class="timer-bar" id="timer-bar"></div>
+      <span class="timer-text"><span id="time-left">15</span>s</span>
+    </div>
+
+    <div class="board">
+      <div class="categories">Aggie Traditions</div>
+      <div class="categories">Campus Landmarks</div>
+      <div class="categories">Yells &amp; Lingo</div>
+      <div class="categories">Sports &amp; Spirit</div>
+      <div class="categories">History &amp; Alumni</div>
+      <div class="categories">College Station Life</div>
+
+      <!-- $200 row -->
+      <div class="cell" data-value="200" data-answer="gig 'em,gig em,gig'em,gigem,gigem!,gig 'em!">
+        <div class="cell-inner">
+          <div class="cell-front">$200</div>
+          <div class="cell-back">What is the thumbs-up hand sign used by Aggies?</div>
         </div>
+      </div>
+      <div class="cell" data-value="200" data-answer="kyle field">
+        <div class="cell-inner">
+          <div class="cell-front">$200</div>
+          <div class="cell-back">Home stadium of Aggie Football.</div>
+        </div>
+      </div>
+      <div class="cell" data-value="200" data-answer="howdy">
+        <div class="cell-inner">
+          <div class="cell-front">$200</div>
+          <div class="cell-back">Official campus greeting.</div>
+        </div>
+      </div>
+      <div class="cell" data-value="200" data-answer="sec,southeastern conference,south eastern conference">
+        <div class="cell-inner">
+          <div class="cell-front">$200</div>
+          <div class="cell-back">Conference Texas A&amp;M currently competes in for most sports.</div>
+        </div>
+      </div>
+      <div class="cell" data-value="200" data-answer="1876,1875,1877">
+        <div class="cell-inner">
+          <div class="cell-front">$200</div>
+          <div class="cell-back">Year Texas A&amp;M was founded (within 1 year).</div>
+        </div>
+      </div>
+      <div class="cell" data-value="200" data-answer="college station">
+        <div class="cell-inner">
+          <div class="cell-front">$200</div>
+          <div class="cell-back">City that, with Bryan, forms the metro area Aggies call home.</div>
+        </div>
+      </div>
+
+      <!-- $400 row -->
+      <div class="cell" data-value="400" data-answer="silver taps,silvertaps">
+        <div class="cell-inner">
+          <div class="cell-front">$400</div>
+          <div class="cell-back">The solemn campus ceremony honoring recently fallen students, held the first Tuesday of the month.</div>
+        </div>
+      </div>
+      <div class="cell" data-value="400" data-answer="century tree,the century tree">
+        <div class="cell-inner">
+          <div class="cell-front">$400</div>
+          <div class="cell-back">Historic tree near the Academic Building known for proposals.</div>
+        </div>
+      </div>
+      <div class="cell" data-value="400" data-answer="whoop,whoop!">
+        <div class="cell-inner">
+          <div class="cell-front">$400</div>
+          <div class="cell-back">Exclamation traditionally reserved for juniors and seniors.</div>
+        </div>
+      </div>
+      <div class="cell" data-value="400" data-answer="reveille">
+        <div class="cell-inner">
+          <div class="cell-front">$400</div>
+          <div class="cell-back">The live canine mascot of Texas A&amp;M.</div>
+        </div>
+      </div>
+      <div class="cell" data-value="400" data-answer="agricultural and mechanical,agriculture and mechanical,agricultural &amp; mechanical">
+        <div class="cell-inner">
+          <div class="cell-front">$400</div>
+          <div class="cell-back">The 'A' and 'M' originally stood for this.</div>
+        </div>
+      </div>
+      <div class="cell" data-value="400" data-answer="fish camp,fishcamp">
+        <div class="cell-inner">
+          <div class="cell-front">$400</div>
+          <div class="cell-back">Major on-campus event where freshmen learn Aggie spirit before classes.</div>
+        </div>
+      </div>
+
+      <!-- $600 row -->
+      <div class="cell" data-value="600" data-answer="aggie muster,muster">
+        <div class="cell-inner">
+          <div class="cell-front">$600</div>
+          <div class="cell-back">Annual worldwide remembrance where Aggies answer 'Here' for the fallen.</div>
+        </div>
+      </div>
+      <div class="cell" data-value="600" data-answer="bonfire memorial,aggie bonfire memorial,bonfire">
+        <div class="cell-inner">
+          <div class="cell-front">$600</div>
+          <div class="cell-back">Memorial site dedicated to the 1999 tragedy.</div>
+        </div>
+      </div>
+      <div class="cell" data-value="600" data-answer="yell leaders,yell leader">
+        <div class="cell-inner">
+          <div class="cell-front">$600</div>
+          <div class="cell-back">Students who lead yells at games (not cheerleaders).</div>
+        </div>
+      </div>
+      <div class="cell" data-value="600" data-answer="maroon out,maroon-out,maroonout">
+        <div class="cell-inner">
+          <div class="cell-front">$600</div>
+          <div class="cell-back">Mass maroon-shirt crowd initiative first launched in 1998.</div>
+        </div>
+      </div>
+      <div class="cell" data-value="600" data-answer="george h. w. bush,george bush sr,george herbert walker bush,george hw bush">
+        <div class="cell-inner">
+          <div class="cell-front">$600</div>
+          <div class="cell-back">This Aggie became the 41st U.S. President.</div>
+        </div>
+      </div>
+      <div class="cell" data-value="600" data-answer="aggie spirit bus,aggie spirit,bus,transit,aggie bus">
+        <div class="cell-inner">
+          <div class="cell-front">$600</div>
+          <div class="cell-back">On-campus transportation system used by many students.</div>
+        </div>
+      </div>
+
+      <!-- $800 row -->
+      <div class="cell" data-value="800" data-answer="aggie ring,the aggie ring,ring">
+        <div class="cell-inner">
+          <div class="cell-front">$800</div>
+          <div class="cell-back">This coveted piece of jewelry symbolizes Aggie achievement and unity.</div>
+        </div>
+      </div>
+      <div class="cell" data-value="800" data-answer="academic building,the academic building">
+        <div class="cell-inner">
+          <div class="cell-front">$800</div>
+          <div class="cell-back">This building's dome is an iconic symbol of campus.</div>
+        </div>
+      </div>
+      <div class="cell" data-value="800" data-answer="12th man,the 12th man,twelfth man">
+        <div class="cell-inner">
+          <div class="cell-front">$800</div>
+          <div class="cell-back">Collective name Aggies use for the student body at games.</div>
+        </div>
+      </div>
+      <div class="cell" data-value="800" data-answer="12th man,the 12th man,twelfth man">
+        <div class="cell-inner">
+          <div class="cell-front">$800</div>
+          <div class="cell-back">Nickname for the dedicated standing student section at football games.</div>
+        </div>
+      </div>
+      <div class="cell" data-value="800" data-answer="foale,mike foale,michael foale,shannon walker,walker">
+        <div class="cell-inner">
+          <div class="cell-front">$800</div>
+          <div class="cell-back">Aggie astronaut who commanded the International Space Station (last name ok).</div>
+        </div>
+      </div>
+      <div class="cell" data-value="800" data-answer="beat week,beat the hell outta,beat the hell outta week">
+        <div class="cell-inner">
+          <div class="cell-front">$800</div>
+          <div class="cell-back">The academic calendar's big rivalry week nickname (two words).</div>
+        </div>
+      </div>
+
+      <!-- $1000 row -->
+      <div class="cell" data-value="1000" data-answer="midnight yell,midnight yell practice,yell practice">
+        <div class="cell-inner">
+          <div class="cell-front">$1000</div>
+          <div class="cell-back">The late-night pep rally tradition held before big games.</div>
+        </div>
+      </div>
+      <div class="cell" data-value="1000" data-answer="reveille's dorm,reveille dorm,reveille's residence,reveille residence,reveille">
+        <div class="cell-inner">
+          <div class="cell-front">$1000</div>
+          <div class="cell-back">This collie's residence is guarded by the Corps' Mascot Company.</div>
+        </div>
+      </div>
+      <div class="cell" data-value="1000" data-answer="corps of cadets,the corps of cadets,corps">
+        <div class="cell-inner">
+          <div class="cell-front">$1000</div>
+          <div class="cell-back">Group that preserves many traditions through disciplined leadership training.</div>
+        </div>
+      </div>
+      <div class="cell" data-value="1000" data-answer="fightin' texas aggie band,fightin texas aggie band,texas aggie band,aggie band">
+        <div class="cell-inner">
+          <div class="cell-front">$1000</div>
+          <div class="cell-back">This drum line's booming cadence fires up Kyle Field.</div>
+        </div>
+      </div>
+      <div class="cell" data-value="1000" data-answer="junction boys,the junction boys">
+        <div class="cell-inner">
+          <div class="cell-front">$1000</div>
+          <div class="cell-back">Legendary football training camp story tied to Bear Bryant.</div>
+        </div>
+      </div>
+      <div class="cell" data-value="1000" data-answer="tamus,texas a&m university system,traditions council,aggie traditions council">
+        <div class="cell-inner">
+          <div class="cell-front">$1000</div>
+          <div class="cell-back">Organization that coordinates many game-day traditions (abbr. ok).</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="answer-container">
+      <input type="text" id="answer-input" placeholder="Type your answer...">
+      <button id="submit-answer">Submit</button>
     </div>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
@@ -263,5 +256,21 @@
     <script src="settings-store.js"></script>
 </body>
 
+  <!-- Modal for correct/wrong feedback -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal" id="modal">
+      <div class="modal-icon" id="modal-icon"></div>
+      <h2 id="modal-title"></h2>
+      <div class="modal-points" id="modal-points"></div>
+      <p id="modal-message"></p>
+      <div class="correct-answers" id="correct-answers-section" style="display: none;"></div>
+      <button class="modal-button" id="modal-close">Continue</button>
+    </div>
+  </div>
 
+  <!-- Script order matters: settings -> timer -> game logic -->
+  <script src="settings-store.js"></script>
+  <script src="timer.js"></script>
+  <script src="script.js"></script>
+</body>
 </html>

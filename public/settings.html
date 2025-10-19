@@ -7,45 +7,70 @@
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css"/>
   <style>
-    body {
-      background-color: #2d0a0a;
-      color: #fdf7e3;
+    :root {
+      --maroon:#500000;
+      --maroon-2:#3a0a0a;
+      --gold:#caa052;
+      --cream:#fdf7e3;
+      --bg: var(--maroon-2);
+      --text: var(--cream);
+    }
+
+    body { 
+      background-color: var(--bg);
+      color: var(--text);
       font-family: 'Bebas Neue', sans-serif;
       text-align: center;
+      transition: background-color .2s ease, color .2s ease;
+    }
+
+    /* Light theme overrides when body has .light */
+    body.light {
+      --bg: #f5eded;
+      --text: #2b0b0b;
+      --maroon: #7a1f1f;
+      --gold: #caa052;
     }
 
     .settings-card {
-      background-color: #721010;
+      background-color: rgba(114,16,16,0.95);
       border-radius: 12px;
       padding: 2rem;
       width: min(90vw, 600px);
       margin: 3rem auto;
-      box-shadow: 0 0 20px rgba(0,0,0,0.4);
+      box-shadow: 0 0 20px rgba(248, 244, 244, 0.4);
+    }
+
+    body.light .settings-card {
+      background-color: #fff;
+      color: #131212;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.08);
     }
 
     .setting-item {
       margin: 15px 0;
       text-align: left;
-      font-size: 2rem;
+      font-size: 1.6rem;
     }
 
-    input[type="range"] {
-      width: 100%; 
-    }
-
-    input[type="text"] {
+    input[type="range"] { width: 100%; }
+    select, input[type="text"] {
       width: 100%;
       padding: 6px;
-      background-color: #500000;
-      color: #fdf7e3;
-      border: 2px solid #caa052;
+      background-color: rgba(80,0,0,0.2);
+      color: var(--text);
+      border: 2px solid var(--gold);
       border-radius: 5px;
-      font-size: 1.2rem;
+      font-size: 1rem;
+    }
+    body.light select, body.light input[type="text"] {
+      background-color: #fff;
+      color: #2b0b0b;
     }
 
     button {
-      background-color: #caa052;
-      color: #500000;
+      background-color: var(--gold);
+      color: var(--maroon);
       border: none;
       padding: 10px 20px;
       border-radius: 8px;
@@ -54,26 +79,14 @@
       font-size: 1.1rem;
       font-family: 'Bebas Neue', sans-serif;
     }
+    button:hover { filter: brightness(0.95); }
 
-    button:hover {
-      background-color: #e0b762;
-    }
-
-    .save-button {
-      background-color: #2d8f2d;
-      color: white;
-      font-size: 1.3rem;
-      padding: 12px 30px;
-    }
-
-    .save-button:hover {
-      background-color: #3aad3a;
-    }
+    .save-button { background-color: #2d8f2d; color: white; font-size: 1.1rem; padding: 10px 18px; }
   </style>
 </head>
 <body>
   <header class="topbar">
-    <h2><span><a href="index.html">Texas A&M Jeopardy</a></span></h2>
+    <h2><span><a href="index.html">Texas A&amp;M Jeopardy</a></span></h2>
     <nav>
       <ul>
         <li><a href="howtoplay.html">How to Play?</a></li>
@@ -88,7 +101,7 @@
     <div class="settings-card">
       <div class="setting-item">
         <label>
-          <input type="checkbox" id="soundToggle" checked>
+          <input type="checkbox" id="soundToggle">
           Sound Effects
         </label>
       </div>
@@ -99,66 +112,123 @@
       </div>
 
       <div class="setting-item">
-        <label for="playerName">Player Name:</label><br>
-        <input type="text" id="playerName" placeholder="Enter your name">
+        <label for="themeSelect">Theme:</label><br>
+        <select id="themeSelect" aria-label="Theme">
+          <option value="dark">Dark</option>
+          <option value="light">Light</option>
+        </select>
       </div>
 
-      <button class="save-button" id="saveSettings">Save Settings</button>
-
-      <div class="setting-item">
+      <div style="display:flex; gap:12px; justify-content:flex-start; margin-top:18px;">
+        <button class="save-button" id="saveSettings">Save Settings</button>
         <button id="resetLeaderboard">Reset Leaderboard</button>
       </div>
     </div>
   </main>
 
+  <!-- audio element - do not autoplay on settings page -->
+  <audio id="bgMusic" src="audio/jeopardy_theme.mp3" preload="auto" loop></audio>
+
   <script>
-    // Load saved settings on page load
+    // Apply saved theme quickly on settings page load to avoid flash
+    (function applyInitialTheme() {
+      const t = localStorage.getItem('theme') || 'dark';
+      if (t === 'light') document.documentElement.classList.add('light');
+      // Put class on documentElement so CSS variables apply immediately
+      if (t === 'light') document.body.classList.add('light');
+    })();
+
     window.addEventListener('DOMContentLoaded', () => {
+      const bgMusic = document.getElementById('bgMusic');
+      const soundToggle = document.getElementById('soundToggle');
+      const timerSlider = document.getElementById('timerLength');
+      const timerValue = document.getElementById('timerValue');
+      const themeSelect = document.getElementById('themeSelect');
+      const saveBtn = document.getElementById('saveSettings');
+      const resetBtn = document.getElementById('resetLeaderboard');
+
+      // Load saved settings
       const savedTimer = localStorage.getItem('timerLength');
       const savedSound = localStorage.getItem('soundEnabled');
-      const savedName = localStorage.getItem('playerName');
+      const savedTheme = localStorage.getItem('theme');
 
       if (savedTimer) {
-        document.getElementById('timerLength').value = savedTimer;
-        document.getElementById('timerValue').textContent = savedTimer;
+        timerSlider.value = savedTimer;
+        timerValue.textContent = savedTimer;
       }
 
-      if (savedSound !== null) {
-        document.getElementById('soundToggle').checked = savedSound === 'true';
+      // default: sound enabled if key missing
+      soundToggle.checked = savedSound === null ? true : savedSound === 'true';
+
+      if (savedTheme) {
+        themeSelect.value = savedTheme;
+        applyTheme(savedTheme);
+      } else {
+        themeSelect.value = 'dark';
       }
 
-      if (savedName) {
-        document.getElementById('playerName').value = savedName;
-      }
+      // Update timer display while sliding
+      timerSlider.addEventListener('input', () => {
+        timerValue.textContent = timerSlider.value;
+      });
+
+      // Toggle music when checkbox changed (user gesture)
+      soundToggle.addEventListener('change', (e) => {
+        const enabled = e.target.checked;
+        localStorage.setItem('soundEnabled', enabled ? 'true' : 'false');
+
+        if (enabled) {
+          bgMusic.volume = 0.6;
+          bgMusic.play().catch(() => { /* may be blocked until real user gesture */ });
+        } else {
+          bgMusic.pause();
+          bgMusic.currentTime = 0;
+        }
+      });
+
+      // Theme selector changes immediately
+      themeSelect.addEventListener('change', (e) => {
+        const theme = e.target.value;
+        applyTheme(theme);
+      });
+
+      // Save settings
+      saveBtn.addEventListener('click', () => {
+        localStorage.setItem('timerLength', timerSlider.value);
+        localStorage.setItem('soundEnabled', soundToggle.checked ? 'true' : 'false');
+        localStorage.setItem('theme', themeSelect.value);
+
+        // reflect audio state (attempt play when saving if enabled)
+        if (soundToggle.checked) {
+          bgMusic.volume = 0.6;
+          bgMusic.play().catch(() => {});
+        } else {
+          bgMusic.pause();
+          bgMusic.currentTime = 0;
+        }
+
+        alert('Settings saved successfully! ✓');
+      });
+
+      // Reset leaderboard
+      resetBtn.addEventListener('click', () => {
+        if (confirm('Are you sure you want to reset the leaderboard?')) {
+          localStorage.removeItem('leaderboard');
+          alert('Leaderboard has been reset!');
+        }
+      });
     });
 
-    // Update timer value display as slider moves
-    const timerSlider = document.getElementById('timerLength');
-    const timerValue = document.getElementById('timerValue');
-    timerSlider.oninput = () => {
-      timerValue.textContent = timerSlider.value;
-    };
-
-    // Save all settings
-    document.getElementById('saveSettings').addEventListener('click', () => {
-      const timerLength = document.getElementById('timerLength').value;
-      const soundEnabled = document.getElementById('soundToggle').checked;
-      const playerName = document.getElementById('playerName').value;
-
-      localStorage.setItem('timerLength', timerLength);
-      localStorage.setItem('soundEnabled', soundEnabled);
-      localStorage.setItem('playerName', playerName);
-
-      alert('Settings saved successfully! ✓');
-    });
-
-    // Reset leaderboard
-    document.getElementById('resetLeaderboard').addEventListener('click', () => {
-      if (confirm('Are you sure you want to reset the leaderboard?')) {
-        localStorage.removeItem('leaderboard');
-        alert('Leaderboard has been reset!');
+    // set or remove .light class on <body>
+    function applyTheme(theme) {
+      if (theme === 'light') {
+        document.body.classList.add('light');
+        document.documentElement.classList.add('light');
+      } else {
+        document.body.classList.remove('light');
+        document.documentElement.classList.remove('light');
       }
-    });
+    }
   </script>
 </body>
 </html>

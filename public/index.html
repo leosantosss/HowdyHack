@@ -1,35 +1,146 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Texas A&M Jeopardy</title>
-    <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+  <!-- 1. Load the saved theme immediately before paint -->
+  <script>
+    (function() {
+      const t = localStorage.getItem('theme') || 'dark';
+      if (t === 'light') {
+        document.documentElement.classList.add('light');
+        window.addEventListener('DOMContentLoaded', () => document.body.classList.add('light'), { once: true });
+      }
+    })();
+  </script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Texas A&M Jeopardy</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet" />
+
+  <!-- Inline page styles that respect theme variables -->
+  <style>
+    :root {
+      --maroon: #500000;
+      --maroon-2: #3a0a0a;
+      --gold: #caa052;
+      --cream: #fdf7e3;
+
+      /* dark defaults */
+      --bg-grad-top: var(--maroon);
+      --bg-grad-bottom: var(--maroon-2);
+      --text: var(--cream);
+      --heading-glow1: rgba(202,160,82,0.6);
+      --heading-glow2: rgba(202,160,82,0.35);
+    }
+
+    /* Light mode overrides */
+    body.light {
+      --bg-grad-top: #fafafa;
+      --bg-grad-bottom: #e9e9e9;
+      --text: #070707;
+      --heading-glow1: rgba(13, 13, 13, 0.3);
+      --heading-glow2: rgba(80, 0, 0, 0.15);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(1200px 600px at 50% -10%, rgba(255,255,255,0.06), transparent 80%),
+        linear-gradient(180deg, var(--bg-grad-top) 0%, var(--bg-grad-bottom) 100%);
+      color: var(--text);
+      font-family: 'Bebas Neue', sans-serif;
+      transition: background .25s ease, color .25s ease;
+    }
+
+    .main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      height: calc(100vh - 80px);
+      text-align: center;
+    }
+
+    .main h1 {
+      font-size: clamp(3rem, 9vw, 8rem);
+      letter-spacing: 6px;
+      margin: 0;
+      color: var(--text);
+      text-shadow:
+        0 0 30px var(--heading-glow1),
+        0 0 60px var(--heading-glow2);
+      animation: glow 3s infinite ease-in-out;
+    }
+
+    @keyframes glow {
+      0%, 100% {
+        text-shadow: 0 0 30px var(--heading-glow1), 0 0 60px var(--heading-glow2);
+      }
+      50% {
+        text-shadow: 0 0 20px var(--gold), 0 0 40px var(--gold);
+      }
+    }
+
+    .play-btn {
+      display: inline-block;
+      background: linear-gradient(90deg, var(--maroon), var(--gold));
+      font-weight: 700;
+      font-size: 2rem;
+      padding: 1.2rem 3rem;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 0 25px rgba(255, 215, 0, 0.4);
+      color: #fff;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .play-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 40px rgba(255, 215, 0, 0.6);
+    }
+
+    .woo {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: transparent url('Jeopardy!_logo.png') repeat;
+      animation: moveJeop 60s linear infinite;
+      opacity: 0.2;
+      z-index: -2;
+    }
+
+    @keyframes moveJeop {
+      from { background-position: 0 0; }
+      to { background-position: 10000px 10000px; }
+    }
+  </style>
 </head>
 
 <body>
-    <header class = "topbar">
-        <h2><span><a href = "index.html">Texas A&M Jeopardy</a></span></h2>
-        <img src ="a&m.png" width = 40 height = 40>
-        <nav>
-            <ul>
-                <li><a href="howtoplay.html">How to Play?</a></li>
-                <li><a href="leaderboard.html">Leaderboard</a></li>
-                <li><a href="Settings.html">Settings</a></li>
-            </ul>
-        </nav>
-    </header>
-    <div class = "woo"></div>
+  <header class="topbar">
+    <h2><a href="index.html">Texas A&M Jeopardy</a></h2>
+    <img src="a&m.png" width="40" height="40" alt="Texas A&M Logo">
+    <nav>
+      <ul>
+        <li><a href="howtoplay.html">How to Play?</a></li>
+        <li><a href="leaderboard.html">Leaderboard</a></li>
+        <li><a href="settings.html">Settings</a></li>
+      </ul>
+    </nav>
+  </header>
 
-    <main class="main">
-        <h1>Aggie Jeopardy!</h1>
-        <a href="board.html" class="play-btn">Play</a>
-    </main>
-    <footer>
+  <div class="woo"></div>
 
-    </footer>
+  <main class="main">
+    <h1>Aggie Jeopardy!</h1>
+    <a href="board.html" class="play-btn">Play</a>
+  </main>
+
+  <footer></footer>
 </body>
-
 </html>

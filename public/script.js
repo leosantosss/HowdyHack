@@ -76,6 +76,30 @@ const CATEGORIES = [
   },
 ];
 
+// Background music setup
+const bgMusic = new Audio('jeopardy_theme.mp3');
+bgMusic.loop = true;
+bgMusic.volume = 0.6;
+bgMusic.preload = 'auto';
+
+let _jeopardyMusicStarted = false;
+
+function startMusicIfNeeded() {
+  if (_jeopardyMusicStarted) return;
+  if (localStorage.getItem('soundEnabled') === 'true') {
+    _jeopardyMusicStarted = true;
+    bgMusic.play().catch(() => {});
+  }
+}
+
+function stopMusic() {
+  if (!_jeopardyMusicStarted) return;
+  bgMusic.pause();
+  bgMusic.currentTime = 0;
+  _jeopardyMusicStarted = false;
+}
+
+// Initialize game state
 let score = 0;
 let currentCell = null;
 let currentAnswers = [];
@@ -153,8 +177,6 @@ function startTimer() {
       clearInterval(timerInterval);
       timeUp();
     }
-  }, 1000);
-}
 
 function stopTimer() {
   if (timerInterval) {
@@ -169,14 +191,13 @@ function timeUp() {
     showModal(false, currentPoints, currentAnswers);
 
     currentCell.classList.add('answered');
-    answerInput.value = "";
+    document.getElementById('answer-input').value = "";
     currentCell = null;
     currentAnswers = [];
     currentPoints = 0;
 
     checkGameOver();
   }
-}
 
 function checkAnswer() {
   if (!currentCell || currentAnswers.length === 0) {
@@ -187,9 +208,7 @@ function checkAnswer() {
 
   const userAnswer = answerInput.value.trim().toLowerCase();
 
-  if (userAnswer === "") {
-    showModal(false, 0, ['Please enter an answer!']);
-    return;
+    modalOverlay.classList.add('show');
   }
 
   if (currentAnswers.includes(userAnswer)) {
@@ -212,34 +231,25 @@ function checkAnswer() {
 function showModal(isCorrect, points, correctAnswersList = []) {
   modal.className = 'modal ' + (isCorrect ? 'correct' : 'wrong');
 
-  if (isCorrect) {
-    modalIcon.textContent = '🎉';
-    modalTitle.textContent = 'CORRECT!';
-    modalPoints.textContent = '+$' + points;
-    modalMessage.textContent = 'Great job, Aggie!';
-    correctAnswersSection.style.display = 'none';
-  } else {
-    modalIcon.textContent = '❌';
-    modalTitle.textContent = 'INCORRECT';
-    modalPoints.textContent = '-$' + points;
-    modalMessage.textContent = 'Better luck next time!';
-    correctAnswersSection.innerHTML = '<strong>Correct answers:</strong><br>' +
-      correctAnswersList.map(a => a.charAt(0).toUpperCase() + a.slice(1)).join(', ');
-    correctAnswersSection.style.display = 'block';
-  }
+        // Get the point value from the cell
+        const pointText = this.querySelector('.cell-front').textContent;
+        currentPoints = parseInt(pointText.replace('$', ''));
 
-  modalOverlay.classList.add('show');
-}
+        // Support multiple comma-separated answers
+        currentAnswers = this.getAttribute('data-answer')
+          .split(',')
+          .map(a => a.trim().toLowerCase());
 
-modalClose.addEventListener('click', function () {
-  modalOverlay.classList.remove('show');
-});
+        // Start the timer with penalty
+        window.beginQuestionTimer(currentPoints);
+      }
+    });
+  });
 
-modalOverlay.addEventListener('click', function (e) {
-  if (e.target === modalOverlay) {
-    modalOverlay.classList.remove('show');
-  }
-});
+  // Modal close button
+  document.getElementById('modal-close').addEventListener('click', function () {
+    document.getElementById('modal-overlay').classList.remove('show');
+  });
 
 function checkGameOver() {
   const allCells = document.querySelectorAll('.cell');
